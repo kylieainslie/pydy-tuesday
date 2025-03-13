@@ -1,4 +1,5 @@
 # Pydy Tuesday 2025-03-04
+<img src="LBACS-logo.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
 
 Data Source: [Long Beach Animal
 Shelter](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-04/readme.md)
@@ -106,7 +107,6 @@ from great_tables import GT
 )
 ```
 
-\<!DOCTYPE html\>
 <html lang="en">
 
 <head>
@@ -586,6 +586,5 @@ plt.show()
 ```
 
 <figure>
-<img src="pt_2025-03-04_files/pt_2025-03-04_10_0.png" alt="png" />
-<figcaption aria-hidden="true">png</figcaption>
+<img src="pt_2025-03-04_files/pt_2025-03-04_10_0.png" />
 </figure>
