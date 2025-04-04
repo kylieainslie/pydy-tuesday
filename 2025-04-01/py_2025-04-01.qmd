@@ -3,17 +3,173 @@ title: "testing quarto"
 format: html
 jupyter: python3
 ---
-```{python}
-import PyDyTuesday
 
-# set working director
+# Pydy Tuesday 2025-04-01
+<img src="pokemon.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
+
+Data Source: The dataset is sourced from [`pokemon`](https://github.com/williamorim/pokemon), an R package which provides Pokemon information in both English and Brazilian Portuguese.
+
+A supplemental [data source](https://gist.github.com/EmilHvitfeldt/b6773de4c00426c1c80e1b578cd50546) on the evolution of Pokemon is sourced from [Emil Hvitfeldt](https://gist.github.com/EmilHvitfeldt).
+
+### Data Details
+The `pokemon` package provides a dataset of Pokemon information in both English and Brazilian Portuguese. The dataset contains 949 rows and 22 columns, including information such as the Pokemon’s name, ID, height, weight, stats, type, and more.
+
+The `evolutiions.csv` file created my Emil Hvitfeldt contains information on the evolutionary stage and family of each Pokemon.
+
+### Desired visualization
+A plot of the evolutionary stages of each pokemon by family using the image of the pokemon as the points.
+
+## Set up
+```{python}
+# import required libraries
+import os
+import PyDyTuesday
+import pandas as pd
+import requests
+from tqdm import tqdm 
+
+# set working directory
 os.getcwd()
 os.chdir(os.getcwd() + '/2025-04-01')
+```
 
-"hello" + "world"
+## Download data
+We can download the data using the `PyDyTuesday` library and specifying the date. This will load several files:
+- `pokemon_df.csv`: data file.
+- `pokemon.png`: logo sticker for `PalmTraits` database.
+- `meta.yaml`: meta data file with information about the data files and the curator.
+
+The data dictionary is located [here](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-04-01/readme.md#data-dictionary)
+
+```{python}
 # Download files from the week, which you can then read in locally
 PyDyTuesday.get_date('2025-04-01')
-import pandas as pd
 
 df = pd.read_csv("pokemon_df.csv", encoding='latin-1')
+print(df.head())
+```
+
+We can download Emil's evolutionary data from his github here: [https://gist.github.com/EmilHvitfeldt](https://gist.github.com/EmilHvitfeldt).
+
+```{python}
+# URL to the raw CSV file
+url = "https://gist.github.com/EmilHvitfeldt/b6773de4c00426c1c80e1b578cd50546/raw/evolutiions.csv"
+
+# Read the CSV file directly from the URL
+evol_df = pd.read_csv(url)
+print(evol_df.head())
+```
+
+## Data wrangling
+We want to merge `df` with `evol_df` by Pokemon name so that we can get the `url_image` column.
+
+```{python}
+df2 = df[['pokemon', 'url_image']]
+
+df_merge = pd.merge(evol_df, df2, how = 'left', left_on='name', right_on='pokemon')
+df_merge = df_merge[["name", "stage", "family", "url_image"]]
+df_plot = df_merge[df_merge["family"] <= 20]
+df_plot
+```
+
+## Plot preparation
+We want to use the image for each pokemon in the `image_url` column of the dataset, but first we need to download the images at each url. We will create a new directory to store the downloaded images in.
+
+```{python}
+# Create folder for images
+image_dir = "pokemon_images"
+os.makedirs(image_dir, exist_ok=True)
+
+# Function to download an image
+def download_image(url, filename):
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        with open(filename, 'wb') as file:
+            for chunk in response.iter_content(1024):
+                file.write(chunk)
+    else:
+        print(f"Failed to download {url}")
+
+# Loop through dataset and download images
+for idx, row in tqdm(df_plot.iterrows(), total=len(df_plot)):
+    pokemon_name = row["name"]
+    image_url = row["url_image"]
+    image_path = os.path.join(image_dir, f"{pokemon_name}.png")
+    
+    # Download image if it doesn't exist
+    if not os.path.exists(image_path):
+        download_image(image_url, image_path)
+```
+
+Now add a new column to `plot_df` with the path to each image.
+
+```{python}
+# Define image directory
+image_dir = "pokemon_images"
+df_plot2 = df_plot.copy() 
+df_plot2["image_path"] = df_plot2["name"].apply(lambda x: os.path.join(image_dir, f"{x}.png"))
+
+# Sort by family and stage for correct plotting
+df_plot2 = df_plot2.sort_values(["family", "stage"])
+```
+
+## Evolution plot
+
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import seaborn as sns
+
+def add_image(ax, img_path, x, y, zoom=0.01):
+    """ Add Pokémon image at given (x, y) coordinates on the plot. """
+    if os.path.exists(img_path):  # Check if image exists
+        img = mpimg.imread(img_path)
+        imagebox = OffsetImage(img, zoom=zoom)
+        ab = AnnotationBbox(imagebox, (x, y), frameon=False)
+        ax.add_artist(ab)
+
+# Set the figure size (increase height for better spacing)
+fig_height = max(8, len(df_plot["family"].unique()) * 0.6)  # Adjust dynamically
+fig, ax = plt.subplots(figsize=(10, fig_height))
+
+# Plot evolution stages with scatter points (later replaced with images)
+sns.scatterplot(data=df_plot, x="stage", y="family", ax=ax, color="white")
+
+# Get unique families and map to y-axis positions
+families = df_plot2["family"].unique()
+family_positions = {family: i for i, family in enumerate(families)}
+
+# Plot evolution tree
+for _, row in df_plot2.iterrows():
+    x = row["stage"]
+    y = family_positions[row["family"]]
+    
+    # Add Pokémon image at stage position
+    add_image(ax, row["image_path"], x, y)
+
+    # Draw evolution line (connect evolutions)
+    if row["stage"] > 1:
+        prev_stage = row["stage"] - 1
+        ax.plot([prev_stage, x], [y, y], "k-", lw=1)
+
+# Set labels and formatting
+ax.set_yticks(range(len(families)))
+ax.set_yticklabels(families)
+ax.set_xticks([1, 2, 3])
+ax.set_xticklabels(["Stage 1", "Stage 2", "Stage 3"])
+ax.set_xlabel("Evolution Stage")
+ax.set_ylabel("Family")
+ax.set_title("Pokémon Evolution Tree")
+ax.set_xlim(0.5, 3.5)
+ax.set_ylim(-0.5, len(families) - 0.5)
+
+# Hide unnecessary plot elements
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["left"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.yaxis.grid(True, linestyle="--", alpha=0.5)
+
+plt.show()        
 ```
