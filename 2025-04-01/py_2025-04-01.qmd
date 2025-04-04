@@ -1,0 +1,19 @@
+---
+title: "testing quarto"
+format: html
+jupyter: python3
+---
+```{python}
+import PyDyTuesday
+
+# set working director
+os.getcwd()
+os.chdir(os.getcwd() + '/2025-04-01')
+
+"hello" + "world"
+# Download files from the week, which you can then read in locally
+PyDyTuesday.get_date('2025-04-01')
+import pandas as pd
+
+df = pd.read_csv("pokemon_df.csv", encoding='latin-1')
+```
