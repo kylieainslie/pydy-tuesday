@@ -1,20 +1,15 @@
 ---
-title: "testing quarto"
+title: "Pydy Tuesday 2025-04-01"
 format: html
 jupyter: python3
 ---
 
-# Pydy Tuesday 2025-04-01
+# Data Source
 <img src="pokemon.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
 
-Data Source: The dataset is sourced from [`pokemon`](https://github.com/williamorim/pokemon), an R package which provides Pokemon information in both English and Brazilian Portuguese.
+**Data Source:** The dataset is sourced from [`pokemon`](https://github.com/williamorim/pokemon), an R package which provides Pokemon information in both English and Brazilian Portuguese. The dataset contains 949 rows and 22 columns, including information such as the Pokemon’s name, ID, height, weight, stats, type, and more.
 
-A supplemental [data source](https://gist.github.com/EmilHvitfeldt/b6773de4c00426c1c80e1b578cd50546) on the evolution of Pokemon is sourced from [Emil Hvitfeldt](https://gist.github.com/EmilHvitfeldt).
-
-### Data Details
-The `pokemon` package provides a dataset of Pokemon information in both English and Brazilian Portuguese. The dataset contains 949 rows and 22 columns, including information such as the Pokemon’s name, ID, height, weight, stats, type, and more.
-
-The `evolutiions.csv` file created my Emil Hvitfeldt contains information on the evolutionary stage and family of each Pokemon.
+A supplemental [data source](https://gist.github.com/EmilHvitfeldt/b6773de4c00426c1c80e1b578cd50546) on the evolution of Pokemon is sourced from [Emil Hvitfeldt](https://gist.github.com/EmilHvitfeldt). The `evolutiions.csv` file created my Emil Hvitfeldt contains information on the evolutionary stage and family of each Pokemon.
 
 ### Desired visualization
 A plot of the evolutionary stages of each pokemon by family using the image of the pokemon as the points.
@@ -28,9 +23,10 @@ import pandas as pd
 import requests
 from tqdm import tqdm 
 
-# set working directory
-os.getcwd()
-os.chdir(os.getcwd() + '/2025-04-01')
+# set working directory (only for line by line coding)
+# comment out when rendering!
+# os.getcwd()
+# os.chdir(os.getcwd() + '/2025-04-01')
 ```
 
 ## Download data
@@ -69,7 +65,7 @@ df2 = df[['pokemon', 'url_image']]
 df_merge = pd.merge(evol_df, df2, how = 'left', left_on='name', right_on='pokemon')
 df_merge = df_merge[["name", "stage", "family", "url_image"]]
 df_plot = df_merge[df_merge["family"] <= 20]
-df_plot
+df_plot.head()
 ```
 
 ## Plot preparation
@@ -121,7 +117,7 @@ import matplotlib.image as mpimg
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import seaborn as sns
 
-def add_image(ax, img_path, x, y, zoom=0.01):
+def add_image(ax, img_path, x, y, zoom=0.03):
     """ Add Pokémon image at given (x, y) coordinates on the plot. """
     if os.path.exists(img_path):  # Check if image exists
         img = mpimg.imread(img_path)
