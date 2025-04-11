@@ -1,0 +1,124 @@
+---
+title: "Pydy Tuesday 2025-04-08"
+format: html
+jupyter: python3
+---
+
+# Data Source
+<img src="visits.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
+
+**Data Source:** This week we're exploring state-level results for medicare.gov "timely and effective care" measurements. As of 2025-04-06, the data is available at the [Centers for Medicare and Medicaid Services (CMS) website](https://data.cms.gov/provider-data/dataset/apyc-v239).
+
+*Data provided by:* Tracy Teal (@tracykteal).
+*Additional links:*
+    - [a visualization by Kayla Zhu and Christina Kostandi at the Visual Capitalist](https://www.visualcapitalist.com/mapped-emergency-room-visit-times-by-state/) 
+
+### Background
+Emergency room wait times vary significantly across the United States depending on factors such as hospital resources, patient volume, and staffing levels, with some states facing delays that can stretch for more than three hours.
+
+- Is there a connection between state populations and wait times?
+- Which conditions have the longest wait times? The shortest?
+
+
+## Set up
+```{python}
+# import required libraries
+import os
+import PyDyTuesday
+import pandas as pd
+import requests
+from tqdm import tqdm 
+from great_tables import GT
+
+# set working directory (only for line by line coding)
+# comment out when rendering!
+os.getcwd()
+os.chdir(os.getcwd() + '/2025-04-08')
+```
+
+## Download data
+We can download the data using the `PyDyTuesday` library and specifying the date. This will load several files:
+- `care_state.csv`: data file.
+- `visits.png`: image file.
+- `meta.yaml`: meta data file with information about the data files and the curator.
+
+The data dictionary is located [here](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-04-08/readme.md#data-dictionary)
+
+```{python}
+# Download files from the week, which you can then read in locally
+PyDyTuesday.get_date('2025-04-08')
+
+df = pd.read_csv("care_state.csv", encoding='latin-1')
+```
+
+```{python}
+#| echo: false
+
+(
+    GT(df.head())
+    .tab_header(title="Visit Times per State")
+    .fmt_date(columns=["start_date", "end_date"])
+    .fmt_number(columns=["score"])
+)
+```
+
+## Plot preparation
+We want to use the image for each pokemon in the `image_url` column of the dataset, but first we need to download the images at each url. We will create a new directory to store the downloaded images in.
+
+```{python}
+
+```
+
+
+## Plot
+
+```{python}
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import seaborn as sns
+
+# Set the figure size (increase height for better spacing)
+fig_height = max(8, len(df_plot["family"].unique()) * 0.6)  # Adjust dynamically
+fig, ax = plt.subplots(figsize=(10, fig_height))
+
+# Plot evolution stages with scatter points (later replaced with images)
+sns.scatterplot(data=df_plot, x="stage", y="family", ax=ax, color="white")
+
+# Get unique families and map to y-axis positions
+families = df_plot2["family"].unique()
+family_positions = {family: i for i, family in enumerate(families)}
+
+# Plot evolution tree
+for _, row in df_plot2.iterrows():
+    x = row["stage"]
+    y = family_positions[row["family"]]
+    
+    # Add Pokémon image at stage position
+    add_image(ax, row["image_path"], x, y)
+
+    # Draw evolution line (connect evolutions)
+    if row["stage"] > 1:
+        prev_stage = row["stage"] - 1
+        ax.plot([prev_stage, x], [y, y], "k-", lw=1)
+
+# Set labels and formatting
+ax.set_yticks(range(len(families)))
+ax.set_yticklabels(families)
+ax.set_xticks([1, 2, 3])
+ax.set_xticklabels(["Stage 1", "Stage 2", "Stage 3"])
+ax.set_xlabel("Evolution Stage")
+ax.set_ylabel("Family")
+ax.set_title("Pokémon Evolution Tree")
+ax.set_xlim(0.5, 3.5)
+ax.set_ylim(-0.5, len(families) - 0.5)
+
+# Hide unnecessary plot elements
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["left"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.yaxis.grid(True, linestyle="--", alpha=0.5)
+
+plt.show()        
+```
