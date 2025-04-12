@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Pydy Tuesday 2025-04-08</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="py_2025-04-08_files/libs/clipboard/clipboard.min.js"></script>
+<script src="py_2025-04-08_files/libs/quarto-html/quarto.js"></script>
+<script src="py_2025-04-08_files/libs/quarto-html/popper.min.js"></script>
+<script src="py_2025-04-08_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="py_2025-04-08_files/libs/quarto-html/anchor.min.js"></script>
+<link href="py_2025-04-08_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="py_2025-04-08_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="py_2025-04-08_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="py_2025-04-08_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="py_2025-04-08_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Pydy Tuesday 2025-04-08</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="data-source" class="level1">
+<h1>Data Source</h1>
+<p><img src="visits.png" style="float: right; width: 100px; height: auto; margin-right: 100px;"></p>
+<p><strong>Data Source:</strong> This week we’re exploring state-level results for medicare.gov “timely and effective care” measurements. As of 2025-04-06, the data is available at the <a href="https://data.cms.gov/provider-data/dataset/apyc-v239">Centers for Medicare and Medicaid Services (CMS) website</a>.</p>
+<p><em>Data provided by:</em> Tracy Teal (<span class="citation" data-cites="tracykteal">@tracykteal</span>). <em>Additional links:</em> - <a href="https://www.visualcapitalist.com/mapped-emergency-room-visit-times-by-state/">a visualization by Kayla Zhu and Christina Kostandi at the Visual Capitalist</a></p>
+<section id="background" class="level3">
+<h3 class="anchored" data-anchor-id="background">Background</h3>
+<p>Emergency room wait times vary significantly across the United States depending on factors such as hospital resources, patient volume, and staffing levels, with some states facing delays that can stretch for more than three hours.</p>
+<ul>
+<li>Is there a connection between state populations and wait times?</li>
+<li>Which conditions have the longest wait times? The shortest?</li>
+</ul>
+</section>
+<section id="set-up" class="level2">
+<h2 class="anchored" data-anchor-id="set-up">Set up</h2>
+<div id="14ee58e1" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import required libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyDyTuesday</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> great_tables <span class="im">import</span> GT</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># set working directory (only for line by line coding)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># comment out when rendering!</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#os.getcwd()</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#os.chdir(os.getcwd() + '/2025-04-08')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="download-data" class="level2">
+<h2 class="anchored" data-anchor-id="download-data">Download data</h2>
+<p>We can download the data using the <code>PyDyTuesday</code> library and specifying the date. This will load several files:</p>
+<ul>
+<li><code>care_state.csv</code>: data file.</li>
+<li><code>visits.png</code>: image file.</li>
+<li><code>meta.yaml</code>: meta data file with information about the data files and the curator.</li>
+</ul>
+<p>The data dictionary is located <a href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-04-08/readme.md#data-dictionary">here</a></p>
+<div id="1bdc4800" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download files from the week, which you can then read in locally</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>PyDyTuesday.get_date(<span class="st">'2025-04-08'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"care_state.csv"</span>, encoding<span class="op">=</span><span class="st">'latin-1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>care_state.csv downloaded
+meta.yaml downloaded
+readme.md downloaded
+visits.png downloaded</code></pre>
+</div>
+</div>
+<div id="4e7c2951" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div id="pmdzntbcfn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>
+#pmdzntbcfn table {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+#pmdzntbcfn thead, tbody, tfoot, tr, td, th { border-style: none; }
+ tr { background-color: transparent; }
+#pmdzntbcfn p { margin: 0; padding: 0; }
+ #pmdzntbcfn .gt_table { display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; }
+ #pmdzntbcfn .gt_caption { padding-top: 4px; padding-bottom: 4px; }
+ #pmdzntbcfn .gt_title { color: #333333; font-size: 125%; font-weight: initial; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; border-bottom-color: #FFFFFF; border-bottom-width: 0; }
+ #pmdzntbcfn .gt_subtitle { color: #333333; font-size: 85%; font-weight: initial; padding-top: 3px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; border-top-color: #FFFFFF; border-top-width: 0; }
+ #pmdzntbcfn .gt_heading { background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; }
+ #pmdzntbcfn .gt_bottom_border { border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; }
+ #pmdzntbcfn .gt_col_headings { border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; }
+ #pmdzntbcfn .gt_col_heading { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; }
+ #pmdzntbcfn .gt_column_spanner_outer { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; padding-top: 0; padding-bottom: 0; padding-left: 4px; padding-right: 4px; }
+ #pmdzntbcfn .gt_column_spanner_outer:first-child { padding-left: 0; }
+ #pmdzntbcfn .gt_column_spanner_outer:last-child { padding-right: 0; }
+ #pmdzntbcfn .gt_column_spanner { border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 5px; overflow-x: hidden; display: inline-block; width: 100%; }
+ #pmdzntbcfn .gt_spanner_row { border-bottom-style: hidden; }
+ #pmdzntbcfn .gt_group_heading { padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; text-align: left; }
+ #pmdzntbcfn .gt_empty_group_heading { padding: 0.5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; vertical-align: middle; }
+ #pmdzntbcfn .gt_from_md> :first-child { margin-top: 0; }
+ #pmdzntbcfn .gt_from_md> :last-child { margin-bottom: 0; }
+ #pmdzntbcfn .gt_row { padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; }
+ #pmdzntbcfn .gt_stub { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px; }
+ #pmdzntbcfn .gt_stub_row_group { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px; vertical-align: top; }
+ #pmdzntbcfn .gt_row_group_first td { border-top-width: 2px; }
+ #pmdzntbcfn .gt_row_group_first th { border-top-width: 2px; }
+ #pmdzntbcfn .gt_striped { background-color: rgba(128,128,128,0.05); }
+ #pmdzntbcfn .gt_table_body { border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; }
+ #pmdzntbcfn .gt_sourcenotes { color: #333333; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; }
+ #pmdzntbcfn .gt_sourcenote { font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; text-align: left; }
+ #pmdzntbcfn .gt_left { text-align: left; }
+ #pmdzntbcfn .gt_center { text-align: center; }
+ #pmdzntbcfn .gt_right { text-align: right; font-variant-numeric: tabular-nums; }
+ #pmdzntbcfn .gt_font_normal { font-weight: normal; }
+ #pmdzntbcfn .gt_font_bold { font-weight: bold; }
+ #pmdzntbcfn .gt_font_italic { font-style: italic; }
+ #pmdzntbcfn .gt_super { font-size: 65%; }
+ #pmdzntbcfn .gt_footnote_marks { font-size: 75%; vertical-align: 0.4em; position: initial; }
+ #pmdzntbcfn .gt_asterisk { font-size: 100%; vertical-align: 0; }
+ 
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_heading">
+<th colspan="8" class="gt_heading gt_title gt_font_normal">Visit Times per State</th>
+</tr>
+<tr class="odd gt_col_headings">
+<th id="state" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">state</th>
+<th id="condition" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">condition</th>
+<th id="measure_id" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">measure_id</th>
+<th id="measure_name" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">measure_name</th>
+<th id="score" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">score</th>
+<th id="footnote" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">footnote</th>
+<th id="start_date" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">start_date</th>
+<th id="end_date" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">end_date</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left">AK</td>
+<td class="gt_row gt_left">Healthcare Personnel Vaccination</td>
+<td class="gt_row gt_left">HCP_COVID_19</td>
+<td class="gt_row gt_left">Percentage of healthcare personnel who are up to date with COVID-19 vaccinations</td>
+<td class="gt_row gt_right">7.30</td>
+<td class="gt_row gt_right"><na></na></td>
+<td class="gt_row gt_right">2024-01-01</td>
+<td class="gt_row gt_right">2024-03-31</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left">AK</td>
+<td class="gt_row gt_left">Healthcare Personnel Vaccination</td>
+<td class="gt_row gt_left">IMM_3</td>
+<td class="gt_row gt_left">Healthcare workers given influenza vaccination Higher percentages are better</td>
+<td class="gt_row gt_right">80.00</td>
+<td class="gt_row gt_right"><na></na></td>
+<td class="gt_row gt_right">2023-10-01</td>
+<td class="gt_row gt_right">2024-03-31</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left">AK</td>
+<td class="gt_row gt_left">Emergency Department</td>
+<td class="gt_row gt_left">OP_18b</td>
+<td class="gt_row gt_left">Average (median) time patients spent in the emergency department before leaving from the visit A lower number of minutes is better</td>
+<td class="gt_row gt_right">140.00</td>
+<td class="gt_row gt_right">25, 26</td>
+<td class="gt_row gt_right">2023-04-01</td>
+<td class="gt_row gt_right">2024-03-31</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left">AK</td>
+<td class="gt_row gt_left">Emergency Department</td>
+<td class="gt_row gt_left">OP_18b_HIGH_MIN</td>
+<td class="gt_row gt_left">Average time patients spent in the emergency department before being sent home A lower number of minutes is better (high)</td>
+<td class="gt_row gt_right">157.00</td>
+<td class="gt_row gt_right">25, 26</td>
+<td class="gt_row gt_right">2023-04-01</td>
+<td class="gt_row gt_right">2024-03-31</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left">AK</td>
+<td class="gt_row gt_left">Emergency Department</td>
+<td class="gt_row gt_left">OP_18b_LOW_MIN</td>
+<td class="gt_row gt_left">Average time patients spent in the emergency department before being sent home A lower number of minutes is better (low)</td>
+<td class="gt_row gt_right">136.00</td>
+<td class="gt_row gt_right">25, 26</td>
+<td class="gt_row gt_right">2023-04-01</td>
+<td class="gt_row gt_right">2024-03-31</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+        
+</div>
+</div>
+</section>
+<section id="data-exploration" class="level2">
+<h2 class="anchored" data-anchor-id="data-exploration">Data Exploration</h2>
+<p>Since there are numerous conditions reported in the data, let’s restrict our analysis to those conditions for the Emergency Department (<code>condition = 'Emergency Department'</code>). We’ll also restrict our analysis to measures of average time in the emergency department before being seen, which is <code>measure_id</code> code starting with <code>"OP_18b"</code>.</p>
+<div id="f1e2aca8" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_ed <span class="op">=</span> df[df[<span class="st">'condition'</span>] <span class="op">==</span> <span class="st">'Emergency Department'</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_ed_op <span class="op">=</span> df_ed[df_ed[<span class="st">'measure_id'</span>].<span class="bu">str</span>.startswith(<span class="st">'OP_18b'</span>)]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_ed_op.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">state</th>
+<th data-quarto-table-cell-role="th">condition</th>
+<th data-quarto-table-cell-role="th">measure_id</th>
+<th data-quarto-table-cell-role="th">measure_name</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">footnote</th>
+<th data-quarto-table-cell-role="th">start_date</th>
+<th data-quarto-table-cell-role="th">end_date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>AK</td>
+<td>Emergency Department</td>
+<td>OP_18b</td>
+<td>Average (median) time patients spent in the em...</td>
+<td>140.0</td>
+<td>25, 26</td>
+<td>2023-04-01</td>
+<td>2024-03-31</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AK</td>
+<td>Emergency Department</td>
+<td>OP_18b_HIGH_MIN</td>
+<td>Average time patients spent in the emergency d...</td>
+<td>157.0</td>
+<td>25, 26</td>
+<td>2023-04-01</td>
+<td>2024-03-31</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AK</td>
+<td>Emergency Department</td>
+<td>OP_18b_LOW_MIN</td>
+<td>Average time patients spent in the emergency d...</td>
+<td>136.0</td>
+<td>25, 26</td>
+<td>2023-04-01</td>
+<td>2024-03-31</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>AK</td>
+<td>Emergency Department</td>
+<td>OP_18b_MEDIUM_MIN</td>
+<td>Average time patients spent in the emergency d...</td>
+<td>136.0</td>
+<td>25, 26</td>
+<td>2023-04-01</td>
+<td>2024-03-31</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>AK</td>
+<td>Emergency Department</td>
+<td>OP_18b_VERY_HIGH_MIN</td>
+<td>Average time patients spent in the emergency d...</td>
+<td>NaN</td>
+<td>25, 26</td>
+<td>2023-04-01</td>
+<td>2024-03-31</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>To get a feel for the data, let’s plot the a histogram of the average time spent in the emergency department before being seen.</p>
+<div id="353903d0" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.hist(df_ed_op[<span class="st">'score'</span>], bins<span class="op">=</span><span class="dv">30</span>, color<span class="op">=</span><span class="st">'skyblue'</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Average time (in minutes) spent in ED before being sent home.'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Frequency'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#plt.title('Histogram of Your Column')</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="py_2025-04-08_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From the histogram, we see that the time spent in the ED has a long tail, suggesting that it might be gamma distributed. Let’s check this by fitting a gamma distribution to the data and looking at a Q-Q plot.</p>
+<div id="36771569" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> df_ed_op[<span class="st">'score'</span>].dropna()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a gamma distribution</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>shape, loc, scale <span class="op">=</span> stats.gamma.fit(data)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>stats.probplot(data, dist<span class="op">=</span><span class="st">"gamma"</span>, sparams<span class="op">=</span>(shape, loc, scale), plot<span class="op">=</span>plt)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Q-Q Plot: Gamma Distribution'</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform the Kolmogorov-Smirnov (K-S) test</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>ks_stat, ks_p_value <span class="op">=</span> stats.kstest(data, <span class="st">'gamma'</span>, args<span class="op">=</span>(shape, loc, scale))</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the result</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'K-S Statistic: </span><span class="sc">{</span>ks_stat<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>ks_p_value<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="py_2025-04-08_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>K-S Statistic: 0.9952609699737612, p-value: 0.0</code></pre>
+</div>
+</div>
+<p>Based on these diagnostics, the Gamma distribution is not a good fit for our data. Let’s try a couple of other distributions to see if we get a better fit. We’ll fit the following distributions to our data:</p>
+<ul>
+<li>Normal</li>
+<li>Log-normal</li>
+<li>Weibull</li>
+<li>Exponential</li>
+</ul>
+<p>We’ll test each distribution’s fit with our data using the Kolmogorov-Smirnov (K-S) test as we did above. A small K-S statistic indicates that the data and the fitted distribution are similar, whereas, a large K-S statistic indicates that there is a large discrepancy between the data and the fitted distribution.</p>
+<div id="c74813d1" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Normal Distribution</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>params_normal <span class="op">=</span> stats.norm.fit(data)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Log-Normal Distribution</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>params_lognormal <span class="op">=</span> stats.lognorm.fit(data, floc<span class="op">=</span><span class="dv">0</span>) </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Weibull Distribution</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>params_weibull <span class="op">=</span> stats.weibull_min.fit(data, floc<span class="op">=</span><span class="dv">0</span>) </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Exponential Distribution</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>params_exponential <span class="op">=</span> stats.expon.fit(data, floc<span class="op">=</span><span class="dv">0</span>)  </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform KS test for each distribution</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>ks_stat_normal, p_value_normal <span class="op">=</span> stats.kstest(data, <span class="st">'norm'</span>, args<span class="op">=</span>params_normal)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>ks_stat_lognormal, p_value_lognormal <span class="op">=</span> stats.kstest(data, <span class="st">'lognorm'</span>, args<span class="op">=</span>params_lognormal)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>ks_stat_weibull, p_value_weibull <span class="op">=</span> stats.kstest(data, <span class="st">'weibull_min'</span>, args<span class="op">=</span>params_weibull)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ks_stat_exponential, p_value_exponential <span class="op">=</span> stats.kstest(data, <span class="st">'expon'</span>, args<span class="op">=</span>params_exponential)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Print KS statistics and p-values</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Normal KS Statistic: </span><span class="sc">{</span>ks_stat_normal<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>p_value_normal<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Log-Normal KS Statistic: </span><span class="sc">{</span>ks_stat_lognormal<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>p_value_lognormal<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Weibull KS Statistic: </span><span class="sc">{</span>ks_stat_weibull<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>p_value_weibull<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Exponential KS Statistic: </span><span class="sc">{</span>ks_stat_exponential<span class="sc">}</span><span class="ss">, p-value: </span><span class="sc">{</span>p_value_exponential<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Normal KS Statistic: 0.1012238923712806, p-value: 0.011758357672639457
+Log-Normal KS Statistic: 0.04756563167977379, p-value: 0.6139342539978196
+Weibull KS Statistic: 0.11618248919585941, p-value: 0.0023183503091859185
+Exponential KS Statistic: 0.45561022906317117, p-value: 2.237257487393446e-47</code></pre>
+</div>
+</div>
+<p>From these results, it looks like the log-normal distribution is the best fit to our data.</p>
+<div id="66bd5719" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="py_2025-04-08_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="model-fitting" class="level1">
+<h1>Model fitting</h1>
+<p>Now that we’ve determine the distribution that best fits our outcome variable of interest, we can use an appropriate model, here a generalised linear model with log link, to try to understand what variables in our dataset are associated with ED wait times.</p>
+<div id="a95b32f3" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.formula.api <span class="im">import</span> glm</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>df_fit <span class="op">=</span> df_ed_op.dropna(subset<span class="op">=</span>[<span class="st">'score'</span>])</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> glm(<span class="st">'score ~ state'</span>, data<span class="op">=</span>df_fit, family<span class="op">=</span>sm.families.Gaussian(link<span class="op">=</span>sm.families.links.log())).fit()</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                  score   No. Observations:                  247
+Model:                            GLM   Df Residuals:                      195
+Model Family:                Gaussian   Df Model:                           51
+Link Function:                    log   Scale:                          1137.8
+Method:                          IRLS   Log-Likelihood:                -1193.5
+Date:                Sat, 12 Apr 2025   Deviance:                   2.2188e+05
+Time:                        21:40:40   Pearson chi2:                 2.22e+05
+No. Iterations:                     6   Pseudo R-squ. (CS):             0.6488
+Covariance Type:            nonrobust                                         
+===============================================================================
+                  coef    std err          z      P&gt;|z|      [0.025      0.975]
+-------------------------------------------------------------------------------
+Intercept       4.9576      0.119     41.813      0.000       4.725       5.190
+state[T.AL]     0.1113      0.152      0.733      0.464      -0.186       0.409
+state[T.AR]     0.0768      0.154      0.499      0.618      -0.225       0.379
+state[T.AZ]     0.1794      0.148      1.212      0.226      -0.111       0.470
+state[T.CA]     0.2331      0.145      1.605      0.109      -0.052       0.518
+state[T.CO]    -0.0102      0.160     -0.064      0.949      -0.323       0.303
+state[T.CT]     0.2947      0.142      2.069      0.039       0.015       0.574
+state[T.DC]     0.8100      0.130      6.241      0.000       0.556       1.064
+state[T.DE]     0.4451      0.141      3.161      0.002       0.169       0.721
+state[T.FL]     0.0794      0.154      0.516      0.606      -0.222       0.381
+state[T.GA]     0.1723      0.148      1.161      0.246      -0.119       0.463
+state[T.HI]     0.0025      0.159      0.015      0.988      -0.309       0.314
+state[T.IA]     0.0781      0.154      0.507      0.612      -0.224       0.380
+state[T.ID]     0.0650      0.155      0.420      0.674      -0.238       0.368
+state[T.IL]     0.2831      0.143      1.980      0.048       0.003       0.563
+state[T.IN]    -0.0260      0.161     -0.162      0.872      -0.341       0.289
+state[T.KS]     0.0053      0.159      0.033      0.974      -0.306       0.316
+state[T.KY]     0.1411      0.150      0.940      0.347      -0.153       0.435
+state[T.LA]     0.0356      0.157      0.227      0.820      -0.271       0.343
+state[T.MA]     0.3943      0.138      2.848      0.004       0.123       0.666
+state[T.MD]     0.4805      0.135      3.546      0.000       0.215       0.746
+state[T.ME]     0.3467      0.140      2.472      0.013       0.072       0.622
+state[T.MI]     0.2095      0.146      1.430      0.153      -0.078       0.497
+state[T.MN]     0.0544      0.155      0.350      0.726      -0.250       0.359
+state[T.MO]     0.1969      0.147      1.338      0.181      -0.091       0.485
+state[T.MS]     0.0288      0.157      0.183      0.855      -0.279       0.337
+state[T.MT]     0.0447      0.164      0.272      0.785      -0.277       0.366
+state[T.NC]     0.2541      0.144      1.761      0.078      -0.029       0.537
+state[T.ND]    -0.0088      0.168     -0.052      0.958      -0.339       0.321
+state[T.NE]    -0.0542      0.172     -0.314      0.753      -0.392       0.284
+state[T.NH]     0.1969      0.147      1.338      0.181      -0.091       0.485
+state[T.NJ]     0.2343      0.145      1.613      0.107      -0.050       0.519
+state[T.NM]     0.2852      0.143      1.996      0.046       0.005       0.565
+state[T.NV]     0.0274      0.157      0.174      0.862      -0.281       0.335
+state[T.NY]     0.3367      0.141      2.393      0.017       0.061       0.612
+state[T.OH]     0.1176      0.151      0.776      0.438      -0.179       0.414
+state[T.OK]    -0.0672      0.164     -0.410      0.682      -0.389       0.254
+state[T.OR]     0.2298      0.145      1.580      0.114      -0.055       0.515
+state[T.PA]     0.2552      0.144      1.769      0.077      -0.028       0.538
+state[T.PR]     0.7876      0.134      5.880      0.000       0.525       1.050
+state[T.RI]     0.5416      0.137      3.949      0.000       0.273       0.810
+state[T.SC]     0.1176      0.151      0.776      0.438      -0.179       0.414
+state[T.SD]     0.0140      0.167      0.084      0.933      -0.312       0.340
+state[T.TN]     0.1556      0.149      1.042      0.297      -0.137       0.448
+state[T.TX]     0.0689      0.154      0.446      0.655      -0.234       0.372
+state[T.UT]     0.0246      0.157      0.157      0.876      -0.284       0.333
+state[T.VA]     0.1337      0.151      0.888      0.374      -0.161       0.429
+state[T.VT]     0.2655      0.149      1.777      0.076      -0.027       0.558
+state[T.WA]     0.1735      0.148      1.170      0.242      -0.117       0.464
+state[T.WI]     0.0517      0.156      0.332      0.740      -0.253       0.357
+state[T.WV]     0.1747      0.148      1.178      0.239      -0.116       0.465
+state[T.WY]     0.0486      0.176      0.276      0.783      -0.297       0.394
+===============================================================================</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/kylieainslie/Library/CloudStorage/Dropbox/Mac/Documents/pydy-tuesday/.venv/lib/python3.13/site-packages/statsmodels/genmod/families/links.py:13: FutureWarning: The log link alias is deprecated. Use Log instead. The log link alias will be removed after the 0.15.0 release.
+  warnings.warn(</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
