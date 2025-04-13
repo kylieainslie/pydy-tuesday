@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Kylie Ainslie">
 
 <title>Pydy Tuesday 2025-04-08</title>
 <style>
@@ -89,6 +90,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Kylie Ainslie </p>
+          </div>
+  </div>
     
   
     
@@ -111,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">Set up</h2>
-<div id="35fbbd52" class="cell" data-execution_count="1">
+<div id="ce0fb87c" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import required libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyDyTuesday</span>
@@ -139,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>meta.yaml</code>: meta data file with information about the data files and the curator.</li>
 </ul>
 <p>The data dictionary is located <a href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-04-08/readme.md#data-dictionary">here</a></p>
-<div id="10cfce0d" class="cell" data-execution_count="2">
+<div id="df85b723" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download files from the week, which you can then read in locally</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>PyDyTuesday.get_date(<span class="st">'2025-04-08'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -151,60 +158,60 @@ readme.md downloaded
 visits.png downloaded</code></pre>
 </div>
 </div>
-<div id="60518bda" class="cell" data-execution_count="3">
+<div id="81b76810" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    GT(df.head())</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .tab_header(title<span class="op">=</span><span class="st">"Visit Times per State"</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .fmt_date(columns<span class="op">=</span>[<span class="st">"start_date"</span>, <span class="st">"end_date"</span>])</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .fmt_number(columns<span class="op">=</span>[<span class="st">"score"</span>])</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="33">
-<div id="pyljqoyiva" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div class="cell-output cell-output-display" data-execution_count="43">
+<div id="vskverwqkn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>
-#pyljqoyiva table {
+#vskverwqkn table {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
 
-#pyljqoyiva thead, tbody, tfoot, tr, td, th { border-style: none; }
+#vskverwqkn thead, tbody, tfoot, tr, td, th { border-style: none; }
  tr { background-color: transparent; }
-#pyljqoyiva p { margin: 0; padding: 0; }
- #pyljqoyiva .gt_table { display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; }
- #pyljqoyiva .gt_caption { padding-top: 4px; padding-bottom: 4px; }
- #pyljqoyiva .gt_title { color: #333333; font-size: 125%; font-weight: initial; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; border-bottom-color: #FFFFFF; border-bottom-width: 0; }
- #pyljqoyiva .gt_subtitle { color: #333333; font-size: 85%; font-weight: initial; padding-top: 3px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; border-top-color: #FFFFFF; border-top-width: 0; }
- #pyljqoyiva .gt_heading { background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; }
- #pyljqoyiva .gt_bottom_border { border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; }
- #pyljqoyiva .gt_col_headings { border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; }
- #pyljqoyiva .gt_col_heading { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; }
- #pyljqoyiva .gt_column_spanner_outer { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; padding-top: 0; padding-bottom: 0; padding-left: 4px; padding-right: 4px; }
- #pyljqoyiva .gt_column_spanner_outer:first-child { padding-left: 0; }
- #pyljqoyiva .gt_column_spanner_outer:last-child { padding-right: 0; }
- #pyljqoyiva .gt_column_spanner { border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 5px; overflow-x: hidden; display: inline-block; width: 100%; }
- #pyljqoyiva .gt_spanner_row { border-bottom-style: hidden; }
- #pyljqoyiva .gt_group_heading { padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; text-align: left; }
- #pyljqoyiva .gt_empty_group_heading { padding: 0.5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; vertical-align: middle; }
- #pyljqoyiva .gt_from_md> :first-child { margin-top: 0; }
- #pyljqoyiva .gt_from_md> :last-child { margin-bottom: 0; }
- #pyljqoyiva .gt_row { padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; }
- #pyljqoyiva .gt_stub { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px; }
- #pyljqoyiva .gt_stub_row_group { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px; vertical-align: top; }
- #pyljqoyiva .gt_row_group_first td { border-top-width: 2px; }
- #pyljqoyiva .gt_row_group_first th { border-top-width: 2px; }
- #pyljqoyiva .gt_striped { background-color: rgba(128,128,128,0.05); }
- #pyljqoyiva .gt_table_body { border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; }
- #pyljqoyiva .gt_sourcenotes { color: #333333; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; }
- #pyljqoyiva .gt_sourcenote { font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; text-align: left; }
- #pyljqoyiva .gt_left { text-align: left; }
- #pyljqoyiva .gt_center { text-align: center; }
- #pyljqoyiva .gt_right { text-align: right; font-variant-numeric: tabular-nums; }
- #pyljqoyiva .gt_font_normal { font-weight: normal; }
- #pyljqoyiva .gt_font_bold { font-weight: bold; }
- #pyljqoyiva .gt_font_italic { font-style: italic; }
- #pyljqoyiva .gt_super { font-size: 65%; }
- #pyljqoyiva .gt_footnote_marks { font-size: 75%; vertical-align: 0.4em; position: initial; }
- #pyljqoyiva .gt_asterisk { font-size: 100%; vertical-align: 0; }
+#vskverwqkn p { margin: 0; padding: 0; }
+ #vskverwqkn .gt_table { display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; }
+ #vskverwqkn .gt_caption { padding-top: 4px; padding-bottom: 4px; }
+ #vskverwqkn .gt_title { color: #333333; font-size: 125%; font-weight: initial; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; border-bottom-color: #FFFFFF; border-bottom-width: 0; }
+ #vskverwqkn .gt_subtitle { color: #333333; font-size: 85%; font-weight: initial; padding-top: 3px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; border-top-color: #FFFFFF; border-top-width: 0; }
+ #vskverwqkn .gt_heading { background-color: #FFFFFF; text-align: center; border-bottom-color: #FFFFFF; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; }
+ #vskverwqkn .gt_bottom_border { border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; }
+ #vskverwqkn .gt_col_headings { border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; }
+ #vskverwqkn .gt_col_heading { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; overflow-x: hidden; }
+ #vskverwqkn .gt_column_spanner_outer { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: normal; text-transform: inherit; padding-top: 0; padding-bottom: 0; padding-left: 4px; padding-right: 4px; }
+ #vskverwqkn .gt_column_spanner_outer:first-child { padding-left: 0; }
+ #vskverwqkn .gt_column_spanner_outer:last-child { padding-right: 0; }
+ #vskverwqkn .gt_column_spanner { border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; vertical-align: bottom; padding-top: 5px; padding-bottom: 5px; overflow-x: hidden; display: inline-block; width: 100%; }
+ #vskverwqkn .gt_spanner_row { border-bottom-style: hidden; }
+ #vskverwqkn .gt_group_heading { padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; text-align: left; }
+ #vskverwqkn .gt_empty_group_heading { padding: 0.5px; color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; vertical-align: middle; }
+ #vskverwqkn .gt_from_md> :first-child { margin-top: 0; }
+ #vskverwqkn .gt_from_md> :last-child { margin-bottom: 0; }
+ #vskverwqkn .gt_row { padding-top: 8px; padding-bottom: 8px; padding-left: 5px; padding-right: 5px; margin: 10px; border-top-style: solid; border-top-width: 1px; border-top-color: #D3D3D3; border-left-style: none; border-left-width: 1px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 1px; border-right-color: #D3D3D3; vertical-align: middle; overflow-x: hidden; }
+ #vskverwqkn .gt_stub { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px; }
+ #vskverwqkn .gt_stub_row_group { color: #333333; background-color: #FFFFFF; font-size: 100%; font-weight: initial; text-transform: inherit; border-right-style: solid; border-right-width: 2px; border-right-color: #D3D3D3; padding-left: 5px; padding-right: 5px; vertical-align: top; }
+ #vskverwqkn .gt_row_group_first td { border-top-width: 2px; }
+ #vskverwqkn .gt_row_group_first th { border-top-width: 2px; }
+ #vskverwqkn .gt_striped { background-color: rgba(128,128,128,0.05); }
+ #vskverwqkn .gt_table_body { border-top-style: solid; border-top-width: 2px; border-top-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #D3D3D3; }
+ #vskverwqkn .gt_sourcenotes { color: #333333; background-color: #FFFFFF; border-bottom-style: none; border-bottom-width: 2px; border-bottom-color: #D3D3D3; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; }
+ #vskverwqkn .gt_sourcenote { font-size: 90%; padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; text-align: left; }
+ #vskverwqkn .gt_left { text-align: left; }
+ #vskverwqkn .gt_center { text-align: center; }
+ #vskverwqkn .gt_right { text-align: right; font-variant-numeric: tabular-nums; }
+ #vskverwqkn .gt_font_normal { font-weight: normal; }
+ #vskverwqkn .gt_font_bold { font-weight: bold; }
+ #vskverwqkn .gt_font_italic { font-style: italic; }
+ #vskverwqkn .gt_super { font-size: 65%; }
+ #vskverwqkn .gt_footnote_marks { font-size: 75%; vertical-align: 0.4em; position: initial; }
+ #vskverwqkn .gt_asterisk { font-size: 100%; vertical-align: 0; }
  
 </style>
 
@@ -287,11 +294,11 @@ visits.png downloaded</code></pre>
 <section id="data-exploration" class="level2">
 <h2 class="anchored" data-anchor-id="data-exploration">Data Exploration</h2>
 <p>Since there are numerous conditions reported in the data, let’s restrict our analysis to those conditions for the Emergency Department (<code>condition = 'Emergency Department'</code>). We’ll also restrict our analysis to measures of average time in the emergency department before being seen, which is <code>measure_id</code> code starting with <code>"OP_18b"</code>.</p>
-<div id="10befa84" class="cell" data-execution_count="4">
+<div id="3b156c85" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_ed <span class="op">=</span> df[df[<span class="st">'condition'</span>] <span class="op">==</span> <span class="st">'Emergency Department'</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_ed_op <span class="op">=</span> df_ed[df_ed[<span class="st">'measure_id'</span>].<span class="bu">str</span>.startswith(<span class="st">'OP_18b'</span>)]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_ed_op.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="44">
 <div>
 
 
@@ -372,7 +379,7 @@ visits.png downloaded</code></pre>
 </div>
 </div>
 <p>To get a feel for the data, let’s plot the a histogram of the average time spent in the emergency department before being seen.</p>
-<div id="4e2fae9e" class="cell" data-execution_count="5">
+<div id="973d73a6" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt.hist(df_ed_op[<span class="st">'score'</span>], bins<span class="op">=</span><span class="dv">30</span>, color<span class="op">=</span><span class="st">'skyblue'</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Average time (in minutes) spent in ED'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Frequency'</span>)</span>
@@ -386,7 +393,7 @@ visits.png downloaded</code></pre>
 </div>
 </div>
 <p>From the histogram, we see that the time spent in the ED has a long tail, suggesting that a normal distribution (and thus, linear regression) would not be an approporiate assumption for the underlying distribution. The shape of the data looks like it might be gamma distributed. Let’s check this by fitting a gamma distribution to the data and looking at a Q-Q plot.</p>
-<div id="ff463add" class="cell" data-execution_count="6">
+<div id="70475521" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> df_ed_op[<span class="st">'score'</span>].dropna()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a gamma distribution</span></span>
@@ -420,7 +427,7 @@ visits.png downloaded</code></pre>
 <li>Exponential</li>
 </ul>
 <p>We’ll test each distribution’s fit with our data using the Kolmogorov-Smirnov (K-S) test as we did above. A small K-S statistic indicates that the data and the fitted distribution are similar, whereas, a large K-S statistic indicates that there is a large discrepancy between the data and the fitted distribution.</p>
-<div id="1a5bc3c6" class="cell" data-execution_count="7">
+<div id="cac47ab0" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit different distributions to data</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>params_normal <span class="op">=</span> stats.norm.fit(data)                 <span class="co"># Normal Distribution</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>params_lognormal <span class="op">=</span> stats.lognorm.fit(data, floc<span class="op">=</span><span class="dv">0</span>)   <span class="co"># Log-Normal Distribution</span></span>
@@ -446,7 +453,7 @@ Exponential KS Statistic: 0.45561022906317117, p-value: 2.237257487393446e-47</c
 </div>
 </div>
 <p>We can also overlay each of these distributions over our histogram to visually check how they fit the data.</p>
-<div id="1cbe83de" class="cell" data-execution_count="8">
+<div id="e1bdcf38" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>plt.hist(data, bins<span class="op">=</span><span class="dv">30</span>, color<span class="op">=</span><span class="st">'skyblue'</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>, density<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
@@ -482,7 +489,7 @@ Exponential KS Statistic: 0.45561022906317117, p-value: 2.237257487393446e-47</c
 </div>
 </div>
 <p>From these results, it looks like the log-normal distribution is the best fit to our data. This is confirmed by a low value of the K-S test statistic (0.048) which indicates that data and fitted distribution are similar.</p>
-<div id="f64b4b6f" class="cell" data-execution_count="9">
+<div id="c51ac45d" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>plt.hist(data, bins<span class="op">=</span><span class="dv">30</span>, color<span class="op">=</span><span class="st">'skyblue'</span>, edgecolor<span class="op">=</span><span class="st">'black'</span>, density<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
@@ -506,7 +513,7 @@ Exponential KS Statistic: 0.45561022906317117, p-value: 2.237257487393446e-47</c
 <section id="model-fitting" class="level1">
 <h1>Model fitting</h1>
 <p>Now that we’ve determine the distribution that best fits our outcome variable of interest, we can use an appropriate model, here a generalised linear model with log link, to try to understand what variables in our dataset are associated with ED wait times. * Note: the below code is an example of how you could fit a model; however, I ran out of time to do model-fitting properly.</p>
-<div id="172536dc" class="cell" data-execution_count="10">
+<div id="8d8826c2" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_fit <span class="op">=</span> df_ed_op.dropna(subset<span class="op">=</span>[<span class="st">'score'</span>])</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> glm(<span class="st">'score ~ state'</span>, data<span class="op">=</span>df_fit, family<span class="op">=</span>sm.families.Gaussian(link<span class="op">=</span>sm.families.links.log())).fit()</span>

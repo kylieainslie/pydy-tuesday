@@ -1,5 +1,6 @@
 ---
 title: "Pydy Tuesday 2025-04-08"
+author: "Kylie Ainslie"
 format: html
 jupyter: python3
 ---
