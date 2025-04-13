@@ -10,15 +10,12 @@ jupyter: python3
 **Data Source:** This week we're exploring state-level results for medicare.gov "timely and effective care" measurements. As of 2025-04-06, the data is available at the [Centers for Medicare and Medicaid Services (CMS) website](https://data.cms.gov/provider-data/dataset/apyc-v239).
 
 *Data provided by:* Tracy Teal (@tracykteal).
+
 *Additional links:*
     - [a visualization by Kayla Zhu and Christina Kostandi at the Visual Capitalist](https://www.visualcapitalist.com/mapped-emergency-room-visit-times-by-state/) 
 
 ### Background
-Emergency room wait times vary significantly across the United States depending on factors such as hospital resources, patient volume, and staffing levels, with some states facing delays that can stretch for more than three hours.
-
-- Is there a connection between state populations and wait times?
-- Which conditions have the longest wait times? The shortest?
-
+Emergency room wait times vary significantly across the United States depending on factors such as hospital resources, patient volume, and staffing levels, with some states facing delays that can stretch for more than three hours. In this short Quarto report, rather than focus on trying to visualise associations within the data or fit a model to explain an outcome variable of interest (e.g., wait times), I focus on the statistical basics that must be performed *before* a model can be fit to these data. Specifically, I determine the distribution that best fits time spent in the Emergency Department (ED).
 
 ## Set up
 ```{python}
@@ -26,9 +23,13 @@ Emergency room wait times vary significantly across the United States depending 
 import os
 import PyDyTuesday
 import pandas as pd
-import requests
-from tqdm import tqdm 
 from great_tables import GT
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import seaborn as sns
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.formula.api import glm
 
 # set working directory (only for line by line coding)
 # comment out when rendering!
@@ -53,8 +54,6 @@ df = pd.read_csv("care_state.csv", encoding='latin-1')
 ```
 
 ```{python}
-#| echo: false
-
 (
     GT(df.head())
     .tab_header(title="Visit Times per State")
@@ -73,22 +72,15 @@ df_ed_op.head()
 
 To get a feel for the data, let's plot the a histogram of the average time spent in the emergency department before being seen.
 ```{python}
-import matplotlib.pyplot as plt
-
 plt.hist(df_ed_op['score'], bins=30, color='skyblue', edgecolor='black')
-plt.xlabel('Average time (in minutes) spent in ED before being sent home.')
+plt.xlabel('Average time (in minutes) spent in ED')
 plt.ylabel('Frequency')
-#plt.title('Histogram of Your Column')
 plt.show()
 ```
 
-From the histogram, we see that the time spent in the ED has a long tail, suggesting that it might be gamma distributed. Let's check this by fitting a gamma distribution to the data and looking at a Q-Q plot.
+From the histogram, we see that the time spent in the ED has a long tail, suggesting that a normal distribution (and thus, linear regression) would not be an approporiate assumption for the underlying distribution. The shape of the data looks like it might be gamma distributed. Let's check this by fitting a gamma distribution to the data and looking at a Q-Q plot.
 
 ```{python}
-import scipy.stats as stats
-import seaborn as sns
-import numpy as np
-
 data = df_ed_op['score'].dropna()
 
 # Fit a gamma distribution
@@ -115,17 +107,11 @@ Based on these diagnostics, the Gamma distribution is not a good fit for our dat
 We'll test each distribution's fit with our data using the Kolmogorov-Smirnov (K-S) test as we did above. A small K-S statistic indicates that the data and the fitted distribution are similar, whereas, a large K-S statistic indicates that there is a large discrepancy between the data and the fitted distribution.
 
 ```{python}
-# 1. Normal Distribution
-params_normal = stats.norm.fit(data)
-
-# 2. Log-Normal Distribution
-params_lognormal = stats.lognorm.fit(data, floc=0) 
-
-# 3. Weibull Distribution
-params_weibull = stats.weibull_min.fit(data, floc=0) 
-
-# 4. Exponential Distribution
-params_exponential = stats.expon.fit(data, floc=0)  
+# Fit different distributions to data
+params_normal = stats.norm.fit(data)                 # Normal Distribution
+params_lognormal = stats.lognorm.fit(data, floc=0)   # Log-Normal Distribution
+params_weibull = stats.weibull_min.fit(data, floc=0) # Weibull Distribution 
+params_exponential = stats.expon.fit(data, floc=0)   # Exponential Distribution
 
 # Perform KS test for each distribution
 ks_stat_normal, p_value_normal = stats.kstest(data, 'norm', args=params_normal)
@@ -140,31 +126,58 @@ print(f"Weibull KS Statistic: {ks_stat_weibull}, p-value: {p_value_weibull}")
 print(f"Exponential KS Statistic: {ks_stat_exponential}, p-value: {p_value_exponential}")
 ```
 
-From these results, it looks like the log-normal distribution is the best fit to our data.
+We can also overlay each of these distributions over our histogram to visually check how they fit the data.
+```{python}
+plt.clf()
+
+plt.hist(data, bins=30, color='skyblue', edgecolor='black', density=True, alpha=0.6)
+x = np.linspace(min(data), max(data), 1000)
+
+# Normal Distribution
+pdf_normal = stats.norm.pdf(x, *params_normal)
+plt.plot(x, pdf_normal, 'r-', label="Normal Fit")
+
+# Log-Normal Distribution
+pdf_lognormal = stats.lognorm.pdf(x, *params_lognormal)
+plt.plot(x, pdf_lognormal, 'g-', label="Log-Normal Fit")
+
+# Weibull Distribution
+pdf_weibull = stats.weibull_min.pdf(x, *params_weibull)
+plt.plot(x, pdf_weibull, 'b-', label="Weibull Fit")
+
+# Exponential Distribution
+pdf_exponential = stats.expon.pdf(x, *params_exponential)
+plt.plot(x, pdf_exponential, 'm-', label="Exponential Fit")
+
+# Labels and legend
+plt.xlabel('Average time (in minutes) spent in ED')
+plt.ylabel('Density')
+plt.legend()
+plt.show()
+```
+
+From these results, it looks like the log-normal distribution is the best fit to our data. This is confirmed by a low value of the K-S test statistic (0.048) which indicates that data and fitted distribution are similar.
 
 ```{python}
-#| echo: false
 plt.clf()
 
 plt.hist(data, bins=30, color='skyblue', edgecolor='black', density=True, alpha=0.6)
 x = np.linspace(min(data), max(data), 1000)
 pdf_lognormal = stats.lognorm.pdf(x, *params_lognormal)
 plt.plot(x, pdf_lognormal, 'g-', label="Log-Normal Fit")
-plt.xlabel('Average time (in minutes) spent in ED before being sent home.')
+plt.xlabel('Average time (in minutes) spent in ED')
 plt.ylabel('Density')
 plt.legend()
 plt.show()
 ```
 
 # Model fitting
-Now that we've determine the distribution that best fits our outcome variable of interest, we can use an appropriate model, here a generalised linear model with log link, to try to understand what variables in our dataset are associated with ED wait times.
+Now that we've determine the distribution that best fits our outcome variable of interest, we can use an appropriate model, here a generalised linear model with log link, to try to understand what variables in our dataset are associated with ED wait times. 
+* Note: the below code is an example of how you could fit a model; however, I ran out of time to do model-fitting properly.
 
 ```{python}
-import statsmodels.api as sm
-from statsmodels.formula.api import glm
-
 df_fit = df_ed_op.dropna(subset=['score'])
 
 model = glm('score ~ state', data=df_fit, family=sm.families.Gaussian(link=sm.families.links.log())).fit()
-#print(model.summary())
+# print(model.summary())
 ```
