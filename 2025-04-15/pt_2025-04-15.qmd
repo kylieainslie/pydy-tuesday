@@ -1,0 +1,120 @@
+---
+title: "Pydy Tuesday 2025-04-15"
+author: "Kylie Ainslie"
+format: html
+jupyter: python3
+---
+
+# Data Source
+<img src="palmerpenguins.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
+
+**Data Source:** This week we're taking another look at penguins! 
+The Palmer Penguins dataset first appeared in TidyTuesday back in [July of 2020](https://github.com/rfordatascience/tidytuesday/blob/main/data/2020/2020-07-28/readme.md). The Palmer Penguins data, contained in the [{`palmerpenguins`}](https://allisonhorst.github.io/palmerpenguins/) R package as the `penguins` and `penguins_raw` data frames, have become popular for data exploration and visualisation, particularly in an educational context.
+
+### Background
+The data was originally published in Gorman et al. (2014). Their inclusion in 
+the datasets package included in the base R distribution was motivated by 
+Horst et al. (2022).
+
+*Additional links:*
+Also check out the [{basepenguins}](https://ellakaye.github.io/basepenguins/) R package to convert scripts that use {`palmerpenguins`} to use the base R versions of the datasets.
+
+## Set up
+```{python}
+# import required libraries
+import os
+import PyDyTuesday
+import pandas as pd
+from great_tables import GT
+
+# set working directory (only for line by line coding)
+# comment out when rendering!
+# os.getcwd()
+# os.chdir(os.getcwd() + '/2025-04-15')
+```
+
+## Download data
+We can download the data using the `PyDyTuesday` library and specifying the date. This will load several files:
+
+- `penguins.csv`: data file.
+- `penguins_raw.png`: image file.
+- `meta.yaml`: meta data file with information about the data files and the curator.
+- `readme.md`: README file with information about this week's data.
+
+The data dictionary is located [here](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-04-15/readme.md#data-dictionary)
+
+```{python}
+# Download files from the week, which you can then read in locally
+PyDyTuesday.get_date('2025-04-15')
+
+df = pd.read_csv("penguins.csv") # , encoding='latin-1'
+df_raw = pd.read_csv("penguins_raw.csv")
+```
+
+Let's take a peak at `penguins.csv`:
+```{python}
+(
+    GT(df.head())
+    .tab_header(title="Penguins")
+    .fmt_number(columns=["bill_len", "bill_dep", "flipper_len"])
+)
+```
+
+Let's take a peak at `penguins_raw.csv`
+```{python}
+(
+    GT(df_raw.head())
+    .tab_header(title="Penguins Raw")
+    .fmt_date(columns = ["Date_Egg"])
+    #.fmt_number(columns=["Cul", "bill_dep", "flipper_len"])
+)
+```
+
+## Recreate plot
+This week instead of coming up with my own plot, I'll try to recreate the plot below showing the relationship between flipper length and body mass for the three different species of penguins: Adelie, Chinstrap, and Gentoo.
+
+![Flipper length and body mass for Adelie, Chinstrap, and Gentoo penguins.](README-mass-flipper-1.png)
+
+I'll use `plotnine` to recreate the plot. The code is shown below.
+
+```{python}
+from plotnine import *
+
+# Drop missing values
+df_clean = df.dropna(subset=["flipper_len", "body_mass", "species"])
+
+# Define manual color and shape mappings
+color_scale = scale_color_manual(
+    values={
+        "Adelie": "darkorange",
+        "Chinstrap": "purple",
+        "Gentoo": "#008b8b"
+    }
+)
+
+shape_scale = scale_shape_manual(
+    values={
+        "Adelie": "o",       # circle
+        "Chinstrap": "^",    # triangle
+        "Gentoo": "s"        # square
+    }
+)
+
+# Create the plot
+(
+    ggplot(df_clean, aes(x="flipper_len", y="body_mass", color="species", shape="species"))
+    + geom_point(size=3, stroke=0.5, alpha = 0.8)
+    + color_scale
+    + shape_scale
+    + labs(
+        title="Penguin size, Palmer Station LTER",
+        subtitle='Flipper length and body mass for Adelie, Chinstrap and Gentoo Penguins',
+        x="Flipper Length (mm)",
+        y="Body Mass (g)",
+        color="Species",
+        shape="Species"
+    )
+    + theme_minimal()
+    + theme(legend_position=(0.15, 0.8))
+)
+```
