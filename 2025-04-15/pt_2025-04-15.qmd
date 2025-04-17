@@ -109,12 +109,16 @@ shape_scale = scale_shape_manual(
     + labs(
         title="Penguin size, Palmer Station LTER",
         subtitle='Flipper length and body mass for Adelie, Chinstrap and Gentoo Penguins',
+        caption='Flipper length and body mass for Adelie, Chinstrap and Gentoo Penguins',
         x="Flipper Length (mm)",
         y="Body Mass (g)",
-        color="Species",
-        shape="Species"
+        color="Penguin Species",
+        shape="Penguin Species"
     )
     + theme_minimal()
-    + theme(legend_position=(0.15, 0.8))
+    + theme(
+        legend_position=(0.15, 0.8),
+        plot_caption=element_text(ha='left')
+    )
 )
 ```
