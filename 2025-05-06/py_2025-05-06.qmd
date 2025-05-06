@@ -93,6 +93,13 @@ funding_by_state
 Now, let's create a horizontal bar chart looking at the funding cuts.
 
 ```{python}
+#| fig-width: 10
+#| fig-height: 8
+#| fig-format: png
+#| fig-dpi: 300
+#| fig-path: "figures/"
+#| fig-cap: "NSF Grant Terminations by Funding Amount and State"
+
 import matplotlib.pyplot as plt
 
 # Create a figure with appropriate size

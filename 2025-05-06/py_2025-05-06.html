@@ -123,7 +123,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">Set up</h2>
-<div id="e0eec0de" class="cell" data-execution_count="1">
+<div id="8418b7bb" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import required libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyDyTuesday</span>
@@ -146,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>readme.md</code>: README file with information about this week’s data.</li>
 </ul>
 <p>The data dictionary is located <a href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-06/readme.md#data-dictionary">here</a></p>
-<div id="10e8ccc9" class="cell" data-execution_count="2">
+<div id="f8ae2d40" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download files from the week, which you can then read in locally</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>PyDyTuesday.get_date(<span class="st">'2025-05-06'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -158,7 +158,7 @@ nsf-word-cloud.png downloaded
 nsf_terminations.csv downloaded
 readme.md downloaded</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -318,7 +318,7 @@ readme.md downloaded</code></pre>
 </div>
 </div>
 <p>Let’s do some data wrangling to look at the amount of funding cut by state (and total).</p>
-<div id="a1d4ba06" class="cell" data-message="false" data-execution_count="3">
+<div id="9afe4f3b" class="cell" data-message="false" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop missing values</span></span>
@@ -349,7 +349,7 @@ readme.md downloaded</code></pre>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>funding_by_state[<span class="st">'is_total'</span>] <span class="op">=</span> funding_by_state[<span class="st">'org_state'</span>] <span class="op">==</span> <span class="st">'TOTAL (All States)'</span></span>
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>funding_by_state</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -728,7 +728,7 @@ readme.md downloaded</code></pre>
 </div>
 </div>
 <p>Now, let’s create a horizontal bar chart looking at the funding cuts.</p>
-<div id="d6c8e700" class="cell" data-execution_count="4">
+<div id="3c2d6676" class="cell" data-fig-dpi="300" data-fig-format="png" data-fig-height="8" data-fig-path="figures/" data-fig-width="10" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a figure with appropriate size</span></span>
@@ -772,9 +772,10 @@ readme.md downloaded</code></pre>
 <span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot</span></span>
 <span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="py_2025-05-06_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>NSF Grant Terminations by Funding Amount and State</figcaption>
 </figure>
 </div>
 </div>
