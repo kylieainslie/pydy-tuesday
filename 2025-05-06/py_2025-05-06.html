@@ -106,8 +106,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="data-source" class="level1">
-<h1>Data Source</h1>
 <p><img src="nsf-word-cloud.png" style="float: right; width: 100px; height: auto; margin-right: 100px;"></p>
 <p><strong>Data Source:</strong> This week we’re exploring a dataset of grants for scientific research and education projects from the U.S. National Science Foundation (NSF) that have been terminated by the Trump administration in 2025. In an unprecedented and possibly illegal action, the NSF has terminated over 1,000 such grants starting on April 18, 2025, and terminations continue. These data were collected by <a href="https://grant-watch.us/">Grant Watch</a> by crowdsourcing from researchers and program administrators, as the administration has not released information on these terminations.</p>
 <section id="background" class="level3">
@@ -121,9 +119,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p><em>Additional links:</em> More elaborate analysis could use <a href="https://www.nsf.gov/about/about-nsf-by-the-numbers">data on total awards</a> to look at the fraction of awards terminated, or <a href="https://nces.ed.gov/ipeds/use-the-data">data on educational institutions</a> to look at what kinds of institutions are most affected.</p>
 </section>
+<section id="data-exploration" class="level1">
+<h1>Data Exploration</h1>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">Set up</h2>
-<div id="8418b7bb" class="cell" data-execution_count="1">
+<div id="fa62774a" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import required libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> PyDyTuesday</span>
@@ -146,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>readme.md</code>: README file with information about this week’s data.</li>
 </ul>
 <p>The data dictionary is located <a href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-06/readme.md#data-dictionary">here</a></p>
-<div id="f8ae2d40" class="cell" data-execution_count="2">
+<div id="4abfef93" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download files from the week, which you can then read in locally</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>PyDyTuesday.get_date(<span class="st">'2025-05-06'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -317,8 +317,11 @@ readme.md downloaded</code></pre>
 </div>
 </div>
 </div>
+</section>
+<section id="data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling">Data Wrangling</h2>
 <p>Let’s do some data wrangling to look at the amount of funding cut by state (and total).</p>
-<div id="9afe4f3b" class="cell" data-message="false" data-execution_count="3">
+<div id="74e192e7" class="cell" data-message="false" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop missing values</span></span>
@@ -727,8 +730,11 @@ readme.md downloaded</code></pre>
 </div>
 </div>
 </div>
+</section>
+<section id="data-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="data-visualization">Data Visualization</h2>
 <p>Now, let’s create a horizontal bar chart looking at the funding cuts.</p>
-<div id="3c2d6676" class="cell" data-fig-dpi="300" data-fig-format="png" data-fig-height="8" data-fig-path="figures/" data-fig-width="10" data-execution_count="4">
+<div id="2869e8a6" class="cell" data-fig-dpi="300" data-fig-format="png" data-fig-height="8" data-fig-path="figures/" data-fig-width="10" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a figure with appropriate size</span></span>

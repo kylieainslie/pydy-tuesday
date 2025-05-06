@@ -5,7 +5,6 @@ format: html
 jupyter: python3
 ---
 
-# Data Source
 <img src="nsf-word-cloud.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
 
 **Data Source:** This week we're exploring a dataset of grants for scientific research and education projects from the U.S. National Science Foundation (NSF) that have been terminated by the Trump administration in 2025. In an unprecedented and possibly illegal action, the NSF has terminated over 1,000 such grants starting on April 18, 2025, and terminations continue. These data were collected by [Grant Watch](https://grant-watch.us/) by crowdsourcing from researchers and program administrators, as the administration has not released information on these terminations.
@@ -22,6 +21,7 @@ Some questions you might explore are:
 *Additional links:*
 More elaborate analysis could use [data on total awards](https://www.nsf.gov/about/about-nsf-by-the-numbers) to look at the fraction of awards terminated, or [data on educational institutions](https://nces.ed.gov/ipeds/use-the-data) to look at what kinds of institutions are most affected.
 
+# Data Exploration
 ## Set up
 ```{python}
 # import required libraries
@@ -54,6 +54,7 @@ df = pd.read_csv("nsf_terminations.csv") # , encoding='latin-1'
 df.head()
 ```
 
+## Data Wrangling
 Let's do some data wrangling to look at the amount of funding cut by state (and total).
 ```{python}
 #| warning: false
@@ -90,8 +91,8 @@ funding_by_state['is_total'] = funding_by_state['org_state'] == 'TOTAL (All Stat
 funding_by_state
 ```
 
+## Data Visualization
 Now, let's create a horizontal bar chart looking at the funding cuts.
-
 ```{python}
 #| fig-width: 10
 #| fig-height: 8
