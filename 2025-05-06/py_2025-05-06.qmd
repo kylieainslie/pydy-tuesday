@@ -1,0 +1,139 @@
+---
+title: "Pydy Tuesday 2025-05-06"
+author: "Kylie Ainslie"
+format: html
+jupyter: python3
+---
+
+# Data Source
+<img src="nsf-word-cloud.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
+
+**Data Source:** This week we're exploring a dataset of grants for scientific research and education projects from the U.S. National Science Foundation (NSF) that have been terminated by the Trump administration in 2025. In an unprecedented and possibly illegal action, the NSF has terminated over 1,000 such grants starting on April 18, 2025, and terminations continue. These data were collected by [Grant Watch](https://grant-watch.us/) by crowdsourcing from researchers and program administrators, as the administration has not released information on these terminations.
+
+### Background
+More information, as well as similar data on grant terminations from the National Institutes of Health (NIH), can be found at https://grant-watch.us.
+
+Some questions you might explore are:
+
+- How many grants, and how much money, were terminated by state or congressional district? What institutions? How can you present these on a map?
+- Grants from what directorates, divisions, or programs made up most of the projects terminated?
+- What topics or terms are most common in project titles or abstracts?
+
+*Additional links:*
+More elaborate analysis could use [data on total awards](https://www.nsf.gov/about/about-nsf-by-the-numbers) to look at the fraction of awards terminated, or [data on educational institutions](https://nces.ed.gov/ipeds/use-the-data) to look at what kinds of institutions are most affected.
+
+## Set up
+```{python}
+# import required libraries
+import os
+import PyDyTuesday
+import pandas as pd
+from great_tables import GT
+
+# set working directory (only for line by line coding)
+# comment out when rendering!
+# os.getcwd()
+# os.chdir(os.getcwd() + '/2025-05-06')
+```
+
+## Download data
+We can download the data using the `PyDyTuesday` library and specifying the date. This will load several files:
+
+- `nsf_terminations.csv`: data file.
+- `nsf_word_cloud.png`: image file.
+- `meta.yaml`: meta data file with information about the data files and the curator.
+- `readme.md`: README file with information about this week's data.
+
+The data dictionary is located [here](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-06/readme.md#data-dictionary)
+
+```{python}
+# Download files from the week, which you can then read in locally
+PyDyTuesday.get_date('2025-05-06')
+
+df = pd.read_csv("nsf_terminations.csv") # , encoding='latin-1'
+df.head()
+```
+
+Let's do some data wrangling to look at the amount of funding cut by state (and total).
+```{python}
+#| warning: false
+#| message: false
+import numpy as np
+
+# Drop missing values
+df_clean = df.dropna(subset=["usaspending_obligated", "org_state", "award_type"])
+
+#Aggregate funding by state
+funding_by_state = df_clean.groupby('org_state')['usaspending_obligated'].sum().reset_index()
+
+# Calculate the total funding amount across all states
+total_funding = df_clean['usaspending_obligated'].sum()
+
+# Add a "Total" row at the beginning
+total_row = pd.DataFrame({'org_state': ['TOTAL (All States)'], 'usaspending_obligated': [total_funding]})
+funding_by_state = pd.concat([total_row, funding_by_state], ignore_index=True)
+
+# Sort in descending order
+funding_by_state = funding_by_state.sort_values('usaspending_obligated', ascending=True)
+
+# Take the top 20 states (including the TOTAL row)
+#top_entries = funding_by_state.head(20)
+
+# Format the funding amounts for display (add commas and $ signs)
+funding_by_state['formatted_amount'] = funding_by_state['usaspending_obligated'].apply(
+    lambda x: f"${x:,.0f}"
+)
+
+# Highlight the total row differently
+funding_by_state['is_total'] = funding_by_state['org_state'] == 'TOTAL (All States)'
+
+funding_by_state
+```
+
+Now, let's create a horizontal bar chart looking at the funding cuts.
+
+```{python}
+import matplotlib.pyplot as plt
+
+# Create a figure with appropriate size
+plt.figure(figsize=(14, 16))
+
+# Create horizontal bars - y position corresponds to state names
+y_pos = range(len(funding_by_state))
+bars = plt.barh(y_pos, funding_by_state['usaspending_obligated'])
+
+# Color the TOTAL bar differently
+bars[50].set_color('#bc5090')
+for i in range(0, len(bars)-1):
+    bars[i].set_color('#003f5c')
+
+# Add formatted amounts next to the bars
+max_value = funding_by_state['usaspending_obligated'].max()
+for i, value in enumerate(funding_by_state['usaspending_obligated']):
+    plt.text(
+        value + max_value * 0.02,  # Consistent spacing from bar end
+        i,                        # Y position (bar index)
+        funding_by_state['formatted_amount'].iloc[i],  # Formatted monetary value
+        va='center',              # Center vertically
+        ha='left',                # Left-align text
+        fontsize=14                # Slightly smaller text
+    )
+
+
+# Set y-tick labels to state names
+plt.yticks(y_pos, funding_by_state['org_state'])
+
+# Add labels and title
+plt.xlabel('Funding Amount ($)')
+plt.title('NSF Grant Terminations: Lost Funding Amount by State')
+
+# Remove top and right spines for cleaner look
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+plt.grid(axis='x', linestyle='--', alpha=0.3)
+plt.tight_layout(pad=2.0)
+
+# Display the plot
+plt.show()
+
+```
