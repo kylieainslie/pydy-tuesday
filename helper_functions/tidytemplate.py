@@ -215,28 +215,6 @@ def use_tidytemplate(name=None, open_file=True, refdate=None, ignore=False):
     )
 
 
-def get_week_dates(refdate=None):
-    """Get all dates for the current week (Monday-Sunday)."""
-    if refdate is None:
-        refdate = datetime.now().date()
-        
-    if hasattr(refdate, 'date'):
-        refdate = refdate.date()
-    
-    # Find Monday of current week
-    days_to_monday = refdate.weekday()
-    monday = refdate - timedelta(days=days_to_monday)
-    
-    # Generate all week dates
-    week_dates = [monday + timedelta(days=i) for i in range(7)]
-    return week_dates
-
-
-def format_date_for_filename(date_obj):
-    """Format a date object for use in filenames."""
-    return date_obj.strftime('%Y_%m_%d')
-
-
 # If you want to run the file directly for testing
 if __name__ == "__main__":
     # Test the functions
