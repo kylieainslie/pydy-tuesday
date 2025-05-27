@@ -1,0 +1,214 @@
+---
+title: "Pydy Tuesday 2025-05-06"
+author: "Kylie Ainslie"
+format: html
+jupyter: python3
+---
+
+<img src="nsf-word-cloud.png" style="float: right; width: 100px; height: auto; margin-right: 100px;" />
+
+**Data Source:** The dataset this week explores seismic events detected at the famous Mount Vesuvius in Italy. It comes from the [Italian Istituto Nazionale di Geofisica e Vulcanologia (INGV)](https://www.ingv.it/)'s [Data Portal](https://data.ingv.it/en/) and can be explored
+along with other seismic areas on [the GOSSIP website](https://terremoti.ov.ingv.it/gossip/vesuvio/index.html). The raw data was saved as individual CSV files from the GOSSIP website and some values were translated from Italian to English.   
+
+
+> The Open Data Portal of Istituto Nazionale di Geofisica e Vulcanologia (INGV) gives public access to data resulting from institutional research activities in the fields of Seismology, Volcanology, and Environment.  
+
+Some information about Mount Vesuvius [from INGV](https://www.ingv.it/somma-vesuvio):  
+- Location: Campania, 40°49′18.01″N, 14°25'33.57” E
+- Maximum height: 1281 m above sea level
+- Total surface area: ≈115-150 km2
+- Type of volcano: stratovolcano
+- Start of eruptive activity: <39,000 years
+- Last eruption: 1944 (lasted about 10 days)
+- Activity status: quiescent (not active, but is still registering seismic activity)
+
+# Exploratory Questions
+
+- How has the number and severity of seismic events changed over the last decade?
+- Is there a correlation between earthquake depth and magnitude at Vesuvius?
+- Do seismic events at Vesuvius follow any seasonal patterns or time-of-day patterns?
+- Has the average location of seismic events migrated at all over the course of the data collection period?
+
+# Data Exploration
+## Set up
+```{python set-up}
+# import required libraries
+import os
+import PyDyTuesday
+import pandas as pd
+from great_tables import GT
+
+# set working directory (only for line by line coding)
+# comment out when rendering!
+#os.getcwd()
+#os.chdir(os.getcwd() + '/2025-05-13')
+```
+
+## Download data
+We can download the data using the `PyDyTuesday` library and specifying the date. This will load several files:
+
+- `vesuvius.csv`: data file.
+- `vesuvius_map_2024.png`: image file.
+- `meta.yaml`: meta data file with information about the data files and the curator.
+- `readme.md`: README file with information about this week's data.
+
+The data dictionary is located [here](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-13/readme.md#data-dictionary)
+
+```{python}
+# Download files from the week, which you can then read in locally
+PyDyTuesday.get_date('2025-05-13')
+
+df = pd.read_csv("vesuvius.csv") # , encoding='latin-1'
+df.head(10)
+```
+
+## Data Wrangling
+Let's do some data wrangling to remove NaN values and drop columns that we won't need.
+```{python}
+#| warning: false
+#| message: false
+import numpy as np
+
+# Drop missing values and unneeded variables
+df_clean = df.dropna(subset=["duration_magnitude_md", "time", "latitude", "longitude"])
+df_clean = df_clean[["event_id","time", "latitude", "longitude", "duration_magnitude_md"]]
+
+```
+
+## Data Visualization
+We're going to try to create a map.
+
+```{python}
+import folium
+from folium.plugins import TimestampedGeoJson
+from datetime import datetime
+import matplotlib.colors as mcolors
+import json
+```
+
+First, we need to create the radiating circles.
+```{python}
+# Function to create radiating circles for each earthquake event
+def create_radiating_circles_features(df):
+    features = []
+    
+    # Normalize magnitude for better visualization
+    min_mag = df['duration_magnitude_md'].min()
+    max_mag = df['duration_magnitude_md'].max()
+    
+    # Create a color map for magnitude
+    cmap = mcolors.LinearSegmentedColormap.from_list("", ["green", "yellow", "red"])
+    
+    for _, row in df.iterrows():
+        # For each earthquake, create multiple circles with increasing radius to simulate radiation
+        time = datetime.strptime(row['time'], "%Y-%m-%dT%H:%M:%SZ")
+        
+        # Normalize magnitude for size calculation
+        norm_mag = (row['duration_magnitude_md'] - min_mag) / (max_mag - min_mag) if max_mag > min_mag else 0.5
+        
+        # Create color based on magnitude
+        color = mcolors.rgb2hex(cmap(norm_mag))
+        
+        # Base radius in meters (adjust as needed)
+        base_radius = 100 + (norm_mag * 900)  # 100m to 1000m based on magnitude
+        
+        # Create multiple circles with increasing radius to simulate radiation effect
+        for i in range(1, 3):  # 5 circles per event
+            radius = base_radius * i / 5
+            opacity = 1 - (i / 5)  # Fade out as circles get larger
+            
+            # Calculate time offset for animation timing
+            time_offset = i * 60 * 60 * 24 / 5  # Spread over 1 day
+            circle_time = time.timestamp() * 1000 + time_offset * 1000  # Convert to milliseconds
+            
+            feature = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [row['longitude'], row['latitude']]
+                },
+                "properties": {
+                    "time": circle_time,
+                    "popup": f"Event ID: {row['event_id']}<br>" +
+                             f"Time: {row['time']}<br>" +
+                             f"Magnitude: {row['duration_magnitude_md']}<br>",
+                    "style": {
+                        "radius": radius,
+                        "fillColor": color,
+                        "color": color,
+                        "weight": 1,
+                        "opacity": opacity,
+                        "fillOpacity": opacity * 0.6
+                    },
+                    "icon": "circle",
+                    "iconstyle": {
+                        "fillColor": color,
+                        "fillOpacity": opacity * 0.6,
+                        "stroke": True,
+                        "radius": radius
+                    }
+                }
+            }
+            features.append(feature)
+    
+    return features
+
+```
+
+```{python}
+# Create map centered on Mount Vesuvius
+mean_lat = df_clean['latitude'].mean()
+mean_lon = df_clean['longitude'].mean()
+map_center = [mean_lat, mean_lon]
+
+m = folium.Map(location=map_center, zoom_start=12, tiles='CartoDB positron')
+
+# Add a tile layer for context
+# folium.TileLayer('CartoDB dark_matter', name='Dark Map').add_to(m)
+
+# Create timestamp GeoJSON data for animation
+radiating_features = create_radiating_circles_features(df_clean)
+
+# Add TimestampedGeoJson layer
+TimestampedGeoJson(
+    {
+        'type': 'FeatureCollection',
+        'features': radiating_features
+    },
+    period='PT1H',  # Update every hour
+    duration='PT1H',  # Each frame represents 1 hour
+    add_last_point=False,
+    auto_play=True,
+    loop=True,
+    max_speed=5,
+    loop_button=True,
+    date_options='YYYY-MM-DD HH:mm',
+    time_slider_drag_update=True,
+    transition_time=300  # Smooth transition between frames (in ms)
+).add_to(m)
+
+# Add layer control
+folium.LayerControl().add_to(m)
+
+# Add legend for magnitude
+import branca.colormap as cm
+colormap = cm.LinearColormap(
+    colors=['green', 'yellow', 'red'],
+    vmin=df['duration_magnitude_md'].min(),
+    vmax=df['duration_magnitude_md'].max(),
+    caption='Earthquake Magnitude (MD)'
+)
+colormap.add_to(m)
+
+# Save to HTML file
+m.save('mount_vesuvius_earthquakes_animated.html')
+
+print("Map created successfully as 'mount_vesuvius_earthquakes_animated.html'")
+```
+
+Let's have a look!
+Below is an interactive map showing earthquake events at Mount Vesuvius:
+
+```{=html}
+<iframe width="100%" height="600" src="mount_vesuvius_earthquakes_animated.html" title="Mount Vesuvius Earthquakes"></iframe>
+```
