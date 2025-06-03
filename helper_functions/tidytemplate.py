@@ -221,4 +221,4 @@ if __name__ == "__main__":
     print("Current Tuesday:", current_tuesday())
     
     # Test creating a template
-    # use_tidytemplate(open_file=False)  # Set to False to avoid opening file
+    use_tidytemplate(open_file=True)  # Set to False to avoid opening file
