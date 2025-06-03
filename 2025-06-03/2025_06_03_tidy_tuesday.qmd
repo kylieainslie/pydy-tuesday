@@ -1,0 +1,305 @@
+---
+title: "Tidy Tuesday - 2025-06-03"
+author: "Kylie Ainslie"
+date: "2025-06-03"
+format: 
+  html:
+    code-fold: false
+    toc: true
+    theme: cosmo
+    fig-dpi: 300
+    fig-format: png
+execute:
+  fig-path: "figures/"
+  fig-prefix: "fig-"
+jupyter: python3
+---
+
+# Tidy Tuesday Analysis
+
+Data from: 2025-06-03\
+Created on: 2025-06-03 <img src="pg-logo-129x80.png" style="float: right; width: 100px; height: auto; margin-right: 100px;"/>
+
+## Setup
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.patches as patches
+import pydytuesday
+from scipy import stats
+import numpy as np
+
+print("Tidy Tuesday Analysis")
+print(f"Data from: 2025-06-03")
+```
+
+```{python setup-wd}
+# set working directory (only for line by line coding)
+# comment out when rendering!
+#os.getcwd()
+#os.chdir(os.getcwd() + '/2025-06-03')
+```
+
+## Load Data
+
+```{python}
+# Load this week's data using PyDyTuesday
+tt = pydytuesday.get_date('2025-06-03')
+
+```
+
+## Data Exploration
+
+There are four data sets in this week's Tidy Tuesday. We'll take a look at each of them.
+
+```{python authors}
+df_auth = pd.read_csv("gutenberg_authors.csv")
+df_auth.head()
+```
+
+```{python language}
+df_lang = pd.read_csv("gutenberg_languages.csv")
+df_lang.head()
+```
+
+```{python metadata}
+df_meta = pd.read_csv("gutenberg_metadata.csv")
+df_meta.head()
+```
+
+```{python subjects}
+df_sub = pd.read_csv("gutenberg_subjects.csv")
+df_sub.head()
+```
+
+We'll focus on just the authors data set. Our specific question of interest is how do authors' lifespans change over time? To do this, we need to do a little data wrangling before visualising.
+
+## Data Wrangling
+
+```{python data_wrangling}
+# Create a copy to avoid the warning
+df = df_auth.copy()
+
+# Remove authors with missing birth/death years
+df = df.dropna(subset=['birthdate', 'deathdate'])
+
+# Sort by birth year
+df = df.sort_values('birthdate').reset_index(drop=True)
+
+# Filter
+df = df[df['birthdate'] > 1499]
+
+# Assign colors based on century (handling BCE dates)
+def get_century(year):
+    if year < 0:  # BCE
+        return -((abs(year) - 1) // 100 + 1)  # Negative century for BCE
+    else:  # CE
+        return (year - 1) // 100 + 1
+
+century_colors = { 
+    15: '#F18F01',  # Warm Orange - 15th century
+    16: '#C73E1D',  # Rich Red - 16th century
+    17: '#592E83',  # Deep Purple - 17th century
+    18: '#048A81',  # Teal Green - 18th century
+    19: '#F4A261',  # Soft Orange - 19th century
+    20: '#2E86AB',  # Ocean Blue - 20th century
+    21: '#E76F51',  # Coral - 21st century
+}
+
+df['century'] = df['birthdate'].apply(get_century)
+df['color'] = df['century'].map(century_colors).fillna('#808080')  # Gray for others
+```
+
+## Visualizations
+
+```{python}
+#| fig-cap: "Author lifespans over time"
+#| fig-width: 12
+#| fig-height: 8
+
+# Create the plot
+fig, ax = plt.subplots(figsize=(12, 8))
+
+# Plot each author's lifespan as a horizontal bar
+for i, row in df.iterrows():
+    # Create the lifespan bar
+    bar_height = 0.6
+    ax.barh(i, row['deathdate'] - row['birthdate'], 
+            left=row['birthdate'], height=bar_height,
+            color=row['color'], alpha=0.7, 
+            #edgecolor='black', 
+            linewidth=0.5)
+    
+# Set y-axis
+#ax.set_ylim(-0.5, len(df) - 0.5)
+ax.set_yticks([])
+
+# Set x-axis limits with some padding
+min_year = df['birthdate'].min() - 50
+max_year = df['deathdate'].max() + 20
+ax.set_xlim(min_year, max_year)
+
+min_century = int(df['birthdate'].min() // 100) + 1
+max_century = int(df['birthdate'].max() // 100) + 1
+
+# Add vertical lines at the start of each century
+for century in range(min_century, max_century + 1):
+    century_start = (century - 1) * 100
+    if century_start >= df['birthdate'].min():
+        color = century_colors.get(century, '#808080')
+        ax.axvline(x=century_start, color=color, linestyle='--', 
+                  linewidth=1, alpha=0.2, zorder=0)
+
+# Style the plot
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['left'].set_visible(False)
+
+ax.set_title('Literary Lifespans', fontsize=16, fontweight='bold', 
+             pad=30, loc='left')
+ax.text(0.0, 1.03, 'Author lifespans by birth year, showing longer lives in later centuries and the 19th-century dominance in Project Gutenberg', 
+        transform=ax.transAxes, ha='left', va='bottom', fontsize=8, style='italic',
+        wrap=True)
+
+plt.tight_layout()
+plt.show()
+```
+
+## Analysis
+We created a visualisation to look at author lifespan over time, so let's assess statistically whether average author lifespan is longer if the author was born more recently.
+
+First, we'll calculate summary statistics by birth century.
+```{python}
+df_analysis = df.copy()
+df_analysis['lifespan'] = df_analysis['deathdate'] - df_analysis['birthdate']
+df_analysis['birth_century'] = (df_analysis['birthdate'] // 100) + 1
+
+# Calculate statistics by century
+century_stats = df_analysis.groupby('birth_century')['lifespan'].agg([
+    'count',
+    'mean',
+    'std',
+    'median',
+    'min',
+    'max'
+]).round(1)
+
+# Add quartiles
+century_stats['Q1'] = df_analysis.groupby('birth_century')['lifespan'].quantile(0.25).round(1)
+century_stats['Q3'] = df_analysis.groupby('birth_century')['lifespan'].quantile(0.75).round(1)
+
+# Rename columns for clarity
+century_stats.columns = ['Count', 'Mean', 'Std Dev', 'Median', 'Min', 'Max', 'Q1', 'Q3']
+```
+
+Next, we'll perform some statistical tests to explore the relationship between century of birth and mean lifespan.
+
+```{python}
+# Overall statistics
+overall_mean = df_analysis['lifespan'].mean()
+overall_std = df_analysis['lifespan'].std()
+print(f"Overall mean lifespan: {overall_mean:.1f} years")
+print(f"Overall standard deviation: {overall_std:.1f} years")
+print()
+
+# Test for increasing lifespan over time
+centuries = century_stats.index.values
+mean_lifespans = century_stats['Mean'].values
+
+# Correlation test
+correlation, p_value = stats.pearsonr(centuries, mean_lifespans)
+print(f"Correlation between century and mean lifespan: {correlation:.3f}")
+print(f"P-value: {p_value:.6f}")
+if p_value < 0.05:
+    print("✓ Statistically significant correlation (p < 0.05)")
+else:
+    print("✗ Not statistically significant (p ≥ 0.05)")
+print()
+
+# Linear regression
+slope, intercept, r_value, p_value_reg, std_err = stats.linregress(centuries, mean_lifespans)
+print(f"Linear regression:")
+print(f"  Slope: {slope:.2f} years per century")
+print(f"  R-squared: {r_value**2:.3f}")
+print(f"  P-value: {p_value_reg:.6f}")
+print()
+
+# ANOVA test (comparing centuries)
+century_groups = [df_analysis[df_analysis['birth_century'] == c]['lifespan'].values 
+                 for c in centuries]
+f_stat, p_value_anova = stats.f_oneway(*century_groups)
+print(f"ANOVA test (comparing all centuries):")
+print(f"  F-statistic: {f_stat:.2f}")
+print(f"  P-value: {p_value_anova:.6f}")
+if p_value_anova < 0.05:
+    print("✓ Significant differences between centuries (p < 0.05)")
+else:
+    print("✗ No significant differences between centuries (p ≥ 0.05)")
+print()
+
+```
+
+```{python}
+plt.figure(figsize=(10, 7))
+
+# Plot data points
+plt.scatter(centuries, mean_lifespans, s=100, color='#2E86AB', alpha=0.8, 
+           edgecolors='black', linewidth=1, zorder=3, label='Century averages')
+
+# Plot fitted line
+line_x = np.linspace(centuries.min(), centuries.max(), 100)
+line_y = slope * line_x + intercept
+plt.plot(line_x, line_y, color='#C73E1D', linewidth=2.5, 
+         label=f'Linear trend: +{slope:.2f} years/century')
+
+# Add equation and R² to the plot
+equation_text = f'y = {slope:.2f}x + {intercept:.1f}\nR² = {r_value**2:.3f}\np < 0.001'
+plt.text(0.05, 0.95, equation_text, transform=plt.gca().transAxes, 
+         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
+         verticalalignment='top', fontsize=11)
+
+# Formatting
+plt.xlabel('Birth Century', fontsize=12, fontweight='bold')
+plt.ylabel('Average Lifespan (years)', fontsize=12, fontweight='bold')
+plt.title('The Steady Increase in Author Lifespans\nMean lifespan by birth century with linear trend', 
+          fontsize=10, pad=20)
+
+# Customize x-axis labels
+plt.xticks(centuries, [f'{int(c)}th' for c in centuries])
+
+# Add grid
+plt.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+
+# Legend
+#plt.legend(loc='lower right', fontsize=11)
+
+# Add some styling
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+## Conclusions
+Based on these data, there is strong evidence of increasing author lifespans over time.
+Authors' lifespans increased by 2.81 years per century on average, which represents a substantial improvement in longevity across the time period studied. This increasing lifespan likely reflects broader improvements in medicine, nutrition, sanitation, and living conditions over the centuries. Additionally, authors may have been more likely to be from educated/wealthy classes, and thus benefiting earlier from these improvements.
+
+Statistical Strength:
+
+The correlation of 0.992 indicates an extremely strong positive relationship between birth century and lifespan
+R² = 0.985 means that 98.5% of the variation in average lifespan can be explained by the century of birth
+This is remarkably high for biological/demographic data
+
+## Session Info
+
+```{python}
+import sys
+print(f"Python version: {sys.version}")
+print(f"Pandas version: {pd.__version__}")
+print(f"Matplotlib version: {plt.matplotlib.__version__}")
+print(f"Seaborn version: {sns.__version__}")
+```
