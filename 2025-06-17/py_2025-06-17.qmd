@@ -1,0 +1,133 @@
+---
+title: "Tidy Tuesday - 2025-06-17"
+author: "Kylie Ainslie"
+date: "2025-06-03"
+format: 
+  html:
+    code-fold: false
+    toc: true
+    theme: cosmo
+    fig-dpi: 300
+    fig-format: png
+execute:
+  fig-path: "figures/"
+  fig-prefix: "fig-"
+jupyter: python3
+---
+
+# Tidy Tuesday Analysis
+
+Data from: 2025-06-03
+Created on: 2025-06-03 
+
+<img src="apisguru.png" style="float: right; width: 100px; height: auto; margin-right: 100px;"/>
+
+## Setup
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.patches as patches
+import pydytuesday
+from scipy import stats
+import numpy as np
+
+print("Tidy Tuesday Analysis")
+print(f"Data from: 2025-06-17")
+```
+
+```{python setup-wd}
+import os
+# set working directory (only for line by line coding)
+# comment out when rendering!
+os.getcwd()
+os.chdir(os.getcwd() + '/2025-06-17')
+```
+
+## Load Data
+
+```{python}
+# Load this week's data using PyDyTuesday
+tt = pydytuesday.get_date('2025-06-17')
+```
+
+## Data Exploration
+
+There are four data sets in this week's Tidy Tuesday. We'll take a look at each of them.
+
+```{python authors}
+df_cat = pd.read_csv("api_categories.csv")
+df_cat.head()
+```
+
+```{python language}
+df_info = pd.read_csv("api_info.csv")
+df_info.head()
+```
+
+```{python metadata}
+df_logos = pd.read_csv("api_logos.csv")
+df_logos.head()
+```
+
+```{python subjects}
+df_origins = pd.read_csv("api_origins.csv")
+df_origins.head()
+```
+
+We're going to focus on looking at the different API categories. What are the different types of APIs? Which are the most common?
+
+## Data Wrangling
+
+```{python data_wrangling}
+# Create a copy to avoid the warning
+df = df_cat.copy()
+
+# Remove authors with missing birth/death years
+df = df.dropna(subset=['name', 'apisguru_category'])
+
+# Sort by birth year
+df = df.sort_values('apisguru_category').reset_index(drop=True)
+
+# Count number of APIs in each category
+counts = df.groupby('apisguru_category').size().reset_index(name='count')
+counts.head()
+
+# Remove single letter categories
+categories_to_remove = ['c', 'e', 'i', 'r', 's', 't', 'u', 'y']
+counts_filtered = counts[~counts['apisguru_category'].isin(categories_to_remove)]
+```
+
+# Data Presentation
+First, let's just make a table of the results, but we'll use `great_tables` to make it look pretty.
+
+```{python}
+from great_tables import GT
+
+# Add totals and percentages
+summary_df = counts_filtered.copy()
+summary_df['percentage'] = (summary_df['count'] / summary_df['count'].sum() * 100).round(1)
+summary_df = summary_df.reset_index(drop=True)
+
+# Style with conditional formatting
+summary_table = (
+    GT(summary_df)
+    .tab_header(title="Category Summary with Percentages")
+    .cols_label(
+        apisguru_category="Category",
+        count="Count",
+        percentage="Percentage (%)"
+    )
+    .fmt_number(columns=["count"], decimals=0)
+    .fmt_number(columns="percentage", decimals=1)
+    .data_color(
+        columns="percentage",
+        palette=["#e8f5e8", "#2d5a2d"]
+    )
+)
+
+summary_table.show()
+
+
+```
