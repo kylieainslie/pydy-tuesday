@@ -107,6 +107,7 @@ from great_tables import GT
 
 # Add totals and percentages
 summary_df = counts_filtered.copy()
+summary_df = summary_df.sort_values('count', ascending=False).reset_index(drop=True)
 summary_df['percentage'] = (summary_df['count'] / summary_df['count'].sum() * 100).round(1)
 summary_df = summary_df.reset_index(drop=True)
 
@@ -128,6 +129,19 @@ summary_table = (
 )
 
 summary_table.show()
+```
 
+# Social Media
+So that I can share my table on social media to promote #TidyTuesday and #PydyTuesday, I want to output my table as an image. 
 
+```{python}
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+
+# This will automatically download the correct ChromeDriver version
+service = Service(ChromeDriverManager().install())
+
+# Now try saving your table
+summary_table.save("API_category_summary_table.png")
 ```
