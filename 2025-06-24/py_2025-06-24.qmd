@@ -172,7 +172,7 @@ fig.update_layout(
         coastlinecolor='rgb(204, 204, 204)',
     ),
     title={
-        'text': "Global Measles Incidence Rate Over Time (per 1,000,000 population)<br><span style='font-size:12px; color:#888;'>⚠️ Data is preliminary</span>",
+        'text': "Global Measles Incidence Rate Over Time (per 1,000,000 population)<br><span style='font-size:12px; color:#888;'>⚠️ Data are preliminary</span>",
         'x': 0.5,
         'xanchor': 'center',
         'font': {'size': 18}
