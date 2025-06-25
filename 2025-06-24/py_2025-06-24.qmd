@@ -1,0 +1,219 @@
+---
+title: "Tidy Tuesday - 2025-06-24"
+author: "Kylie Ainslie"
+date: "2025-06-24"
+format: 
+  html:
+    code-fold: false
+    toc: true
+    theme: cosmo
+    fig-dpi: 300
+    fig-format: png
+execute:
+  fig-path: "figures/"
+  fig-prefix: "fig-"
+jupyter: python3
+---
+
+# Tidy Tuesday Analysis
+
+Data from: 2025-06-24
+Created on: 2025-06-24 
+
+<img src="apisguru.png" style="float: right; width: 100px; height: auto; margin-right: 100px;"/>
+
+## Setup
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.patches as patches
+import pydytuesday
+from scipy import stats
+import numpy as np
+
+print("Tidy Tuesday Analysis")
+print(f"Data from: 2025-06-24")
+```
+
+```{python setup-wd}
+import os
+# set working directory (only for line by line coding)
+# comment out when rendering!
+#os.getcwd()
+#os.chdir(os.getcwd() + '/2025-06-24')
+```
+
+## Load Data
+
+```{python}
+# Load this week's data using PyDyTuesday
+tt = pydytuesday.get_date('2025-06-24')
+```
+
+## Data Exploration
+
+There are two data sets in this week's Tidy Tuesday.
+
+```{python authors}
+cases_month = pd.read_csv("cases_month.csv")
+cases_month.head()
+```
+
+```{python language}
+cases_year = pd.read_csv('cases_year.csv')
+cases_year.head()
+```
+
+## Data Wrangling
+We're going to visualise yearly incidence of measles per 1 million people for each country over time. But first, wrangling!
+
+```{python}
+
+import pandas as pd
+import plotly.express as px
+import numpy as np
+
+# Clean and prepare data
+yearly_data = cases_year.dropna(subset=[
+    'measles_incidence_rate_per_1000000_total_population', 
+    'iso3', 
+    'year'
+]).copy()
+
+yearly_data['measles_incidence_rate'] = yearly_data[
+    'measles_incidence_rate_per_1000000_total_population'
+].round(2)
+
+# Get available years
+years = sorted(yearly_data['year'].unique())
+countries = yearly_data[['country', 'iso3', 'region']].drop_duplicates()
+
+# Create complete dataset for smooth animation (fill missing country-year combinations)
+all_combinations = []
+for _, country_row in countries.iterrows():
+    for year in years:
+        country_year_data = yearly_data[
+            (yearly_data['country'] == country_row['country']) & 
+            (yearly_data['year'] == year)
+        ]
+        
+        if len(country_year_data) > 0:
+            # Use existing data
+            all_combinations.append(country_year_data.iloc[0].to_dict())
+        else:
+            # Fill missing years with zero incidence for smooth animation
+            missing_row = {
+                'country': country_row['country'],
+                'iso3': country_row['iso3'],
+                'region': country_row['region'],
+                'year': year,
+                'measles_incidence_rate': 0.0,
+                'measles_total': 0,
+                'total_population': country_row.get('total_population', 0),
+                'measles_incidence_rate_per_1000000_total_population': 0.0
+            }
+            all_combinations.append(missing_row)
+
+# Convert to DataFrame
+complete_data = pd.DataFrame(all_combinations)
+```
+
+# Data Visualisation
+
+```{python}
+#| label: time-lapse-measles-map
+#| fig-width: 12
+#| fig-height: 8
+
+# Calculate color scale range (use 95th percentile to avoid extreme outliers)
+color_max = complete_data['measles_incidence_rate'].quantile(0.95)
+
+# Create animated choropleth map
+fig = px.choropleth(
+    complete_data,
+    locations='iso3',
+    color='measles_incidence_rate',
+    animation_frame='year',
+    hover_name='country',
+    hover_data={
+        'measles_incidence_rate': ':.2f',
+        'measles_total': ':,',
+        'region': True,
+        'year': True,
+        'iso3': False
+    },
+    color_continuous_scale=[
+        [0.0, '#FEF0D9'],     # Very light yellow for zero/low
+        [0.1, '#FDCC8A'],     # Light orange
+        [0.3, '#FC8D59'],     # Medium orange  
+        [0.6, '#E34A33'],     # Red-orange
+        [1.0, '#B30000']      # Dark red for high incidence
+    ],
+    range_color=[0, color_max],
+    labels={
+        'measles_incidence_rate': 'Incidence Rate (per 1M population)',
+        'measles_total': 'Total Cases',
+        'year': 'Year'
+    },
+    title="Global Measles Incidence Rate Over Time (per 1,000,000 population)"
+)
+
+# Customize map layout
+fig.update_layout(
+    geo=dict(
+        showframe=False,
+        showcoastlines=True,
+        projection_type='natural earth',
+        showlakes=True,
+        lakecolor='rgb(255, 255, 255)',
+        landcolor='rgb(243, 243, 243)',
+        coastlinecolor='rgb(204, 204, 204)',
+    ),
+    title={
+        'text': "Global Measles Incidence Rate Over Time (per 1,000,000 population)<br><span style='font-size:12px; color:#888;'>⚠️ Data is preliminary</span>",
+        'x': 0.5,
+        'xanchor': 'center',
+        'font': {'size': 18}
+    },
+    annotations=[
+        dict(
+            text="Data Source: WHO",
+            x=0.98, y=0.02,  # Bottom right
+            xref="paper", yref="paper",
+            font=dict(size=12, color="#555555"),
+            showarrow=False,
+            xanchor='right'
+        )
+    ],
+    width=1200,
+    height=700,
+    margin=dict(t=80, b=20, l=20, r=20)
+)
+
+# Customize animation settings
+fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 1000  # 1 second per frame
+fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 300  # 0.3 second transition
+
+# Customize animation controls
+fig.layout.updatemenus[0].buttons[0].label = "▶ Play"
+fig.layout.updatemenus[0].buttons[1].label = "⏸ Pause"
+
+# Add custom slider settings
+fig.layout.sliders[0].currentvalue.prefix = "Year: "
+fig.layout.sliders[0].len = 0.8
+fig.layout.sliders[0].x = 0.1
+
+# Show summary statistics
+print(f"📊 Dataset Summary:")
+print(f"   • Years covered: {min(years)} - {max(years)}")
+print(f"   • Countries: {len(countries)} countries")
+print(f"   • Total data points: {len(complete_data):,}")
+print(f"   • Highest incidence rate: {complete_data['measles_incidence_rate'].max():.1f} per 1M")
+print(f"   • Countries with data: {complete_data[complete_data['measles_incidence_rate'] > 0]['country'].nunique()}")
+
+# Display the animated map
+fig.show()
+```
+

@@ -1,0 +1,482 @@
+---
+title: "Global Measles Incidence: Time-Lapse Analysis"
+subtitle: "Interactive time-series visualization with animated country exploration"
+author: "Kylie Ainslie"
+date: today
+format: 
+  dashboard:
+    theme: cosmo
+    orientation: rows
+    nav-buttons:
+      - icon: globe
+        text: "WHO"
+        href: "https://www.who.int"
+    logo: "https://www.who.int/images/default-source/infographics/who-emblem.png"
+    css: |
+      .card-header {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: bold;
+      }
+      .control-panel {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      .metric-card {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        margin: 5px;
+      }
+      .country-info {
+        background: #e8f4f8;
+        padding: 15px;
+        border-left: 4px solid #3498db;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+---
+
+```{python}
+#| label: load-data
+#| include: false
+
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import numpy as np
+import json
+
+# Load and process data
+cases_year = pd.read_csv('cases_year.csv')
+
+# Clean and prepare data
+yearly_data = cases_year.dropna(subset=[
+    'measles_incidence_rate_per_1000000_total_population', 
+    'iso3', 
+    'year'
+]).copy()
+
+yearly_data['measles_incidence_rate'] = yearly_data[
+    'measles_incidence_rate_per_1000000_total_population'
+].round(2)
+
+# Ensure we have data for all years for smooth animation
+years = sorted(yearly_data['year'].unique())
+countries = yearly_data[['country', 'iso3', 'region']].drop_duplicates()
+
+# Create complete year-country combinations and fill missing values
+all_combinations = []
+for _, country_row in countries.iterrows():
+    for year in years:
+        country_year_data = yearly_data[
+            (yearly_data['country'] == country_row['country']) & 
+            (yearly_data['year'] == year)
+        ]
+        
+        if len(country_year_data) > 0:
+            all_combinations.append(country_year_data.iloc[0].to_dict())
+        else:
+            # Fill missing years with zero incidence
+            missing_row = {
+                'country': country_row['country'],
+                'iso3': country_row['iso3'],
+                'region': country_row['region'],
+                'year': year,
+                'measles_incidence_rate': 0.0,
+                'measles_total': 0,
+                'total_population': 0,
+                'measles_incidence_rate_per_1000000_total_population': 0.0
+            }
+            all_combinations.append(missing_row)
+
+# Convert to DataFrame
+complete_data = pd.DataFrame(all_combinations)
+
+# Prepare data for animations
+animation_data = complete_data.copy()
+countries_list = sorted(yearly_data['country'].dropna().unique().tolist())
+
+# Global statistics by year
+yearly_stats = yearly_data.groupby('year').agg({
+    'measles_total': 'sum',
+    'measles_incidence_rate': 'mean',
+    'country': 'count'
+}).reset_index()
+yearly_stats.columns = ['year', 'total_cases', 'avg_incidence', 'countries_reporting']
+
+# CREATE COUNTRY TIME SERIES DATA - THIS WAS MISSING!
+country_ts_data = {}
+for country in countries_list:
+    country_data = yearly_data[yearly_data['country'] == country].sort_values('year')
+    if len(country_data) > 0:
+        country_ts_data[country] = country_data.to_dict('records')
+
+# Prepare regional data for all years
+regional_by_year = []
+for year in years:
+    year_data = yearly_data[yearly_data['year'] == year]
+    regional_stats = year_data.groupby('region').agg({
+        'measles_incidence_rate': 'mean',
+        'measles_total': 'sum',
+        'country': 'count'
+    }).reset_index()
+    
+    for _, row in regional_stats.iterrows():
+        regional_by_year.append({
+            'year': year,
+            'region': row['region'],
+            'avg_incidence': row['measles_incidence_rate'],
+            'total_cases': row['measles_total'],
+            'countries': row['country']
+        })
+```
+
+```{python}
+#| include: false
+#| label: pass-data-to-ojs
+
+# Convert pandas/numpy types to native Python types for JSON serialization
+def convert_to_python_types(data):
+    """Convert pandas/numpy types to native Python types"""
+    if isinstance(data, list):
+        return [convert_to_python_types(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: convert_to_python_types(value) for key, value in data.items()}
+    elif hasattr(data, 'item'):  # numpy scalars
+        return data.item()
+    elif pd.isna(data):
+        return None
+    else:
+        return data
+
+# Convert all data to Python-native types
+years_list_clean = [int(year) for year in years]
+countries_list_clean = [str(country) for country in countries_list]
+yearly_stats_clean = convert_to_python_types(yearly_stats.to_dict('records'))
+country_ts_clean = convert_to_python_types(country_ts_data)
+regional_data_clean = convert_to_python_types(regional_by_year)
+
+# Pass all data to Observable JS
+ojs_define(
+    years_list=years_list_clean,
+    countries_list=countries_list_clean,
+    min_year=int(min(years)),
+    max_year=int(max(years)),
+    yearly_stats_data=yearly_stats_clean,
+    country_ts_dict=country_ts_clean,
+    regional_data_by_year=regional_data_clean
+)
+```
+
+## Row {height=20%}
+
+### 🎛️ Time-Lapse Controls
+
+```{ojs}
+//| echo: false
+
+// Year slider for animation control
+viewof selectedYear = Inputs.range(
+  [min_year, max_year], 
+  {
+    label: "Select Year:",
+    step: 1,
+    value: max_year
+  }
+)
+
+// Animation speed control
+viewof animationSpeed = Inputs.range(
+  [100, 2000], 
+  {
+    label: "Animation Speed (ms):",
+    step: 100,
+    value: 500
+  }
+)
+
+// Play/Pause button
+viewof isPlaying = Inputs.toggle({label: "Auto-play Animation"})
+```
+
+### 📊 Year Statistics
+
+```{ojs}
+//| echo: false
+
+// Display statistics for selected year
+yearStats = {
+  const stats = yearly_stats_data;
+  const currentStats = stats.find(d => d.year === selectedYear) || stats[stats.length - 1];
+  
+  return html`
+    <div style="display: flex; gap: 15px; justify-content: space-around;">
+      <div class="metric-card">
+        <div style="font-size: 1.8rem; font-weight: bold;">${currentStats.countries_reporting}</div>
+        <div style="font-size: 0.8rem;">Countries</div>
+      </div>
+      <div class="metric-card" style="background: linear-gradient(135deg, #56ab2f, #a8e6cf);">
+        <div style="font-size: 1.8rem; font-weight: bold;">${currentStats.total_cases.toLocaleString()}</div>
+        <div style="font-size: 0.8rem;">Total Cases</div>
+      </div>
+      <div class="metric-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+        <div style="font-size: 1.8rem; font-weight: bold;">${currentStats.avg_incidence.toFixed(1)}</div>
+        <div style="font-size: 0.8rem;">Avg. Incidence</div>
+      </div>
+      <div class="metric-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+        <div style="font-size: 1.8rem; font-weight: bold;">${selectedYear}</div>
+        <div style="font-size: 0.8rem;">Selected Year</div>
+      </div>
+    </div>
+  `
+}
+```
+
+## Row {height=80%}
+
+## Column {width=70%}
+
+### 🗺️ Animated World Map - Click Countries to Explore
+
+```{python}
+#| label: animated-world-map
+
+# Create animated choropleth map
+fig = px.choropleth(
+    animation_data,
+    locations='iso3',
+    color='measles_incidence_rate',
+    animation_frame='year',
+    hover_name='country',
+    hover_data={
+        'measles_incidence_rate': ':.2f',
+        'measles_total': ':,',
+        'year': True,
+        'iso3': False
+    },
+    color_continuous_scale=[
+        [0, '#FEF0D9'],
+        [0.1, '#FDCC8A'], 
+        [0.3, '#FC8D59'],
+        [0.6, '#E34A33'],
+        [1, '#B30000']
+    ],
+    range_color=[0, animation_data['measles_incidence_rate'].quantile(0.95)],
+    labels={
+        'measles_incidence_rate': 'Incidence Rate (per 1M)',
+        'measles_total': 'Total Cases'
+    },
+    title="Measles Incidence Rate Over Time (Click countries to see detailed analysis below)"
+)
+
+fig.update_layout(
+    geo=dict(
+        showframe=False,
+        showcoastlines=True,
+        projection_type='natural earth'
+    ),
+    title_x=0.5,
+    height=500,
+    margin=dict(t=60, b=20, l=20, r=20)
+)
+
+# Customize animation settings
+fig.layout.updatemenus[0].buttons[0].args[1]['frame']['duration'] = 800
+fig.layout.updatemenus[0].buttons[0].args[1]['transition']['duration'] = 300
+
+fig.show()
+```
+
+## Column {width=30%}
+
+### 🎯 Country Selection
+
+```{ojs}
+//| echo: false
+
+// Country selector (also updates from map clicks)
+viewof selectedCountry = Inputs.select(
+  countries_list, 
+  {
+    label: "Select Country:",
+    value: "Nigeria"
+  }
+)
+
+// Display selected country info
+selectedCountryInfo = {
+  const countryData = country_ts_dict[selectedCountry] || [];
+  if (countryData.length === 0) return html`<p>No data for selected country</p>`;
+  
+  const latest = countryData[countryData.length - 1];
+  const peak = countryData.reduce((max, current) => 
+    current.measles_incidence_rate > max.measles_incidence_rate ? current : max
+  );
+  const total_cases = countryData.reduce((sum, d) => sum + (d.measles_total || 0), 0);
+  
+  return html`
+    <div class="country-info">
+      <h4 style="margin-top: 0; color: #2c3e50;">📍 ${selectedCountry}</h4>
+      <p><strong>Region:</strong> ${latest.region}</p>
+      <p><strong>Latest Rate:</strong> ${latest.measles_incidence_rate} per 1M (${latest.year})</p>
+      <p><strong>Peak Rate:</strong> ${peak.measles_incidence_rate} per 1M (${peak.year})</p>
+      <p><strong>Total Cases (All Years):</strong> ${total_cases.toLocaleString()}</p>
+      <p><strong>Data Years:</strong> ${Math.min(...countryData.map(d => d.year))} - ${Math.max(...countryData.map(d => d.year))}</p>
+    </div>
+  `
+}
+```
+
+### 📈 Country Time Series
+
+```{ojs}
+//| echo: false
+
+// Time series plot for selected country
+countryTimeSeries = {
+  const countryData = country_ts_dict[selectedCountry] || [];
+  
+  if (countryData.length === 0) {
+    return html`<p>No time series data available for ${selectedCountry}</p>`
+  }
+  
+  const plot = Plot.plot({
+    title: `${selectedCountry} - Measles Incidence Over Time`,
+    width: 380,
+    height: 300,
+    marginLeft: 60,
+    marginBottom: 60,
+    x: {
+      label: "Year",
+      domain: d3.extent(countryData, d => d.year),
+      tickFormat: "d"
+    },
+    y: {
+      label: "Incidence Rate (per 1M)",
+      domain: [0, d3.max(countryData, d => d.measles_incidence_rate) * 1.1]
+    },
+    color: {
+      legend: true
+    },
+    marks: [
+      Plot.areaY(countryData, {
+        x: "year", 
+        y: "measles_incidence_rate",
+        fill: "#FC8D59",
+        fillOpacity: 0.3
+      }),
+      Plot.line(countryData, {
+        x: "year", 
+        y: "measles_incidence_rate",
+        stroke: "#E34A33",
+        strokeWidth: 3
+      }),
+      Plot.dot(countryData, {
+        x: "year", 
+        y: "measles_incidence_rate",
+        r: d => Math.sqrt(d.measles_total || 0) / 15 + 3,
+        fill: "#B30000",
+        stroke: "white",
+        strokeWidth: 2,
+        title: d => `${d.year}: ${d.measles_incidence_rate} per 1M\n${(d.measles_total || 0).toLocaleString()} total cases`
+      }),
+      Plot.ruleY([0], {stroke: "#666", strokeDasharray: "2,2"}),
+      Plot.ruleX([selectedYear], {stroke: "#3498db", strokeWidth: 2, strokeDasharray: "5,5"})
+    ]
+  })
+  
+  return plot
+}
+```
+
+### 🔄 Animation Controls
+
+```{ojs}
+//| echo: false
+
+// Auto-animation logic
+{
+  if (isPlaying) {
+    const years = years_list;
+    let currentIndex = years.indexOf(selectedYear);
+    
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % years.length;
+      selectedYear = years[currentIndex];
+    }, animationSpeed);
+    
+    // Clean up interval when isPlaying changes
+    invalidation.then(() => clearInterval(interval));
+  }
+}
+
+// Animation control info
+animationControls = html`
+  <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;">
+    <h5 style="margin-top: 0;">🎬 Animation Guide</h5>
+    <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+      <li><strong>Auto-play:</strong> Toggle to start/stop animation</li>
+      <li><strong>Speed:</strong> Adjust animation speed (100ms = fast, 2000ms = slow)</li>
+      <li><strong>Year Slider:</strong> Manually control which year is displayed</li>
+      <li><strong>Map Interaction:</strong> Click countries on the map above</li>
+    </ul>
+    <p style="margin: 10px 0 0 0; font-size: 0.8rem; color: #666;">
+      💡 <em>Watch how measles patterns change over time across different regions!</em>
+    </p>
+  </div>
+`
+```
+
+### 🌍 Regional Trends
+
+```{ojs}
+//| echo: false
+
+// Regional comparison for selected year
+regionalComparison = {
+  const allRegionalData = regional_data_by_year;
+  const yearData = allRegionalData.filter(d => d.year === selectedYear);
+  
+  const regionArray = yearData.sort((a, b) => b.avg_incidence - a.avg_incidence);
+  
+  const plot = Plot.plot({
+    title: `Regional Comparison - ${selectedYear}`,
+    width: 380,
+    height: 250,
+    marginLeft: 80,
+    marginBottom: 60,
+    x: {
+      label: "Avg. Incidence Rate (per 1M)"
+    },
+    y: {
+      label: "WHO Region"
+    },
+    marks: [
+      Plot.barX(regionArray, {
+        x: "avg_incidence",
+        y: "region",
+        fill: "#667eea",
+        title: d => `${d.region}\nAvg. Incidence: ${d.avg_incidence.toFixed(1)} per 1M\nTotal Cases: ${d.total_cases.toLocaleString()}\nCountries: ${d.countries}`
+      })
+    ]
+  })
+  
+  return plot
+}
+```
+
+```{ojs}
+//| echo: false
+//| include: false
+
+// Import required libraries
+Plot = import("https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm")
+d3 = import("https://cdn.jsdelivr.net/npm/d3@7/+esm")
+Inputs = import("https://cdn.jsdelivr.net/npm/@observablehq/inputs@0.10/+esm")
+```
